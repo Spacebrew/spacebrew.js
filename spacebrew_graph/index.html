@@ -8,217 +8,115 @@
 		<!-- basic libraries -->
     <script type="text/javascript" src="js/jquery/jq.js"></script>
     <script type="text/javascript" src="js/smoothie.js"></script>
-<script type="text/javascript">
-$(document).ready( function() {
-	setup();
-});
 
-function gup( name ) {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results == null )
-    return "";
-  else
-    return results[1];
-}
+    <script type="text/javascript" src="js/sb.js"></script>
+  <script type="text/javascript">
+    $(document).ready( function() {
+    	setup();
+    });
 
-var index = 0;
+    var sb;
 
-var name = gup('name') || window.location.href; 
-var server = gup('server') || 'localhost';
-
-console.log(name);
-var buttonPress = false;
-var buttonText = "";
-var boolVal1, boolVal2, boolVal3;
-var currentMessage1, currentMessage2, currentMessage3;
-
-var myConfig = {
-"config": {
- "name": name,
- "description": "This is an example client which has a big red button you can push to send a message. It also listens for color events and will change it's color based on those messages.",
- "publish": {
-   "messages": [
-   ]
- },
- "subscribe": {
-   "messages": [
-     {
-       "name": "line1",
-       "type": "range"
-     },
-     {
-       "name": "line2",
-       "type": "range"
-     },
-     {
-       "name": "line3",
-       "type": "range"
-     },
-     {
-       "name": "bool1",
-       "type": "boolean"
-     },
-     {
-       "name": "bool2",
-       "type": "boolean"
-     },
-     {
-       "name": "bool3",
-       "type": "boolean"
-     },
-          {
-       "name": "string1",
-       "type": "string"
-     },
-     {
-       "name": "string2",
-       "type": "string"
-     },
-     {
-       "name": "string3",
-       "type": "string"
-     }
-   ]
- }
-}
-};
-
-var ws = new WebSocket("ws://"+server+":9000");
-    ws.onopen = function() {
-        console.log("WebSockets connection opened");
-        var nameMsg = { "name": [
-        	{"name": name}
-       	]};
-   		ws.send(JSON.stringify(nameMsg));
-
-      // send my config
-      ws.send(JSON.stringify(myConfig));
-    }
-    ws.onmessage = function(e) {
-        console.log("Got WebSockets message: " + e.data);
-        
-
-        var currName = JSON.parse(e.data).message.name;
-        var currType = JSON.parse(e.data).message.type;
-        //currName = "partyMode";
-        var currValue = JSON.parse(e.data).message.value;
-        
-        if (currType == "boolean") {
-          currValue = Boolean(currValue);
-          console.log("Cast to boolean");
-        }
-        //currValue = "BIG RED BUTTON";
-        console.log(currName+" : "+currValue);
-
+    // app vars
+    var boolVal1, boolVal2, boolVal3;
+    var currentMessage1, currentMessage2, currentMessage3;
+          
+    //-------------------------------------------------------
+      function onRangeMessage( name, value ){
         // if it's for line 1
-        if (currName == "line1") {
+        if (name == "line1") {
           console.log("received line1 message");
-          line1.append(new Date().getTime(), currValue);
+          line1.append(new Date().getTime(), value);
         }
 
         // if it's for line 2
-        if (currName == "line2") {
+        if (name == "line2") {
           console.log("received line2 message");
-          line2.append(new Date().getTime(), currValue);
+          line2.append(new Date().getTime(), value);
         }
 
         // if it's for line 3
-        if (currName == "line3") {
+        if (name == "line3") {
           console.log("received line3 message");
-          line3.append(new Date().getTime(), currValue);
+          line3.append(new Date().getTime(), value);
         }
+      }
 
-        // if it's for a boolean
-         if (currName == "bool1") {
-            console.log("received bool1 message");
-            //currentMessage = currValue;
-            boolVal1 = currValue;
-            document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
-        }
+    //-------------------------------------------------------
+      function onStringMessage( name, value ){
+        if (name == "string1") {
+              console.log("received string1 message");
+              currentMessage1 = value;
+              document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
+          }
 
-        // if it's for a boolean
-         if (currName == "bool2") {
-            console.log("received bool2 message");
-            //currentMessage = currValue;
-            boolVal2 = currValue;
-            document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
-        }
+           if (name == "string2") {
+              console.log("received string2 message");
+              currentMessage2 = value;
+              document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
+          }
 
-                // if it's for a boolean
-         if (currName == "bool1") {
-            console.log("received bool1 message");
-            //currentMessage = currValue;
-            boolVal3 = currValue;
-            document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
-        }
+           if (name == "string3") {
+              console.log("received string3 message");
+              currentMessage3 = value;
+             document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
+          }
+      }
 
-        if (currName == "string1") {
-            console.log("received string1 message");
-            currentMessage1 = currValue;
-            document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
-        }
+    //-------------------------------------------------------
+      function onBooleanMessage( name, value ){
+          // if it's for a boolean
+           if (name == "bool1") {
+              console.log("received bool1 message");
+              //currentMessage = value;
+              boolVal1 = value;
+              document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
+          }
 
-         if (currName == "string2") {
-            console.log("received string2 message");
-            currentMessage2 = currValue;
-            document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
-        }
+          // if it's for a boolean
+           if (name == "bool2") {
+              console.log("received bool2 message");
+              //currentMessage = value;
+              boolVal2 = value;
+              document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
+          }
 
-         if (currName == "string3") {
-            console.log("received string3 message");
-            currentMessage3 = currValue;
-           document.getElementById("currentMessage").innerHTML="<h1>1: "+currentMessage1+"</h1><h1> 2: "+currentMessage2+"</h1><h1> 3: "+currentMessage3;
-        }
-
-
-        incrementIndex();
-
-
-    }
-    ws.onclose = function() {
-        console.log("WebSockets connection closed");
-    }
+                  // if it's for a boolean
+           if (name == "bool1") {
+              console.log("received bool1 message");
+              //currentMessage = value;
+              boolVal3 = value;
+              document.getElementById("bools").innerHTML="1: "+boolVal1+" 2: "+boolVal2+" 3: "+boolVal3;
+          }
+      }
 
 
-//-------------------------------------------------------
-function setup (){
-// 	// listen to the mouse
-	window.addEventListener("mousedown", onMouseDown);
-}
+    //-------------------------------------------------------
+      function setup (){
+        // setup spacebrew!
+        sb = new Spacebrew.Client();
+        sb.description = "This is an example client which has a big red button you can push to send a message. It also listens for color events and will change it's color based on those messages.";
 
-function incrementIndex() {
-    index += 1;
-    //console.log(index);
-}
+        // Override Spacebrew events
+        // - this is how you catch events coming from Spacebrew
+        sb.onRangeMessage = onRangeMessage;
+        sb.onStringMessage = onStringMessage;
+        sb.onBooleanMessage = onBooleanMessage;
 
-function changeBGC(color){
-  document.body.style.background = color;
-  console.log("Changed color");
-}
+        sb.addSubscribe("line1","range");
+        sb.addSubscribe("line2","range");
+        sb.addSubscribe("line3","range");
+        sb.addSubscribe("bool1","boolean");
+        sb.addSubscribe("bool2","boolean");
+        sb.addSubscribe("bool3","boolean");
+        sb.addSubscribe("string1","string");
+        sb.addSubscribe("string2","string");
+        sb.addSubscribe("string3","string");
 
-//-------------------------------------------------------
-function onMouseDown (evt){
-	//ecs.sendMessage("packet", 255);
-	console.log("Sending message");
+        sb.connect();
+      }
 
-	var message = {message:
-       {
-           clientName:name,
-           name:"buttonPress",
-           type:"boolean",
-           value:"true"
-       }
-   	};
-
-   	//console.log(message);
-   	ws.send(JSON.stringify(message));
-}
-
-
-</script>
+    </script>
 		<!-- MAIN -->
 	</head>
 	<body>
