@@ -68,7 +68,7 @@ Spacebrew.Client = function( server, name, description ){
 	
 	// this._isConnected is internal, this.isConnected returns reference to it
 	// works sort of like a read-only var...
-	this.isConnected = this._isConnected = false;
+	this._isConnected = false;
 }
 
 /**
