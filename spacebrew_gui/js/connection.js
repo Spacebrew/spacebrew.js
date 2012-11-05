@@ -53,10 +53,6 @@ var ws = new WebSocket("ws://"+server+":9000");
     ws.onopen = function() {
         console.log("WebSockets connection opened");
         console.log("my name is: "+name);
-        var nameMsg = { "name": [
-        	{"name": name}
-       	]};
-   		ws.send(JSON.stringify(nameMsg));
 
       // send my config
       ws.send(JSON.stringify(myConfig));
