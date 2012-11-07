@@ -218,10 +218,6 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
 Spacebrew.Client.prototype._onOpen = function() {
     console.log("WebSockets connection opened");
     console.log("my name is: "+this.name);
-    var nameMsg = { "name": [
-    	{"name": this.name}
-   	]};
-	this.socket.send(JSON.stringify(nameMsg));
 
   	// send my config
   	this.updatePubSub();

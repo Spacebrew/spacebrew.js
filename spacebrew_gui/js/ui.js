@@ -3,13 +3,6 @@ $(document).bind("pageinit", function() {
 
 	$(".slider").bind( "change", function(event, ui) {
 		console.log(event,event.target.valueAsNumber);
-		spaceSendMessage(
-			{
-				clientName:name,
-				name:event.target.id,
-				type:"range",
-				value:event.target.valueAsNumber
-			}
-		);
+		sb.send(event.target.id, "range", event.target.valueAsNumber);
 	});
 });

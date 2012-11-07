@@ -113,6 +113,21 @@ Spacebrew.Client.prototype.connect = function(){
 }
 
 /**
+ * Override in your app to receive on open event for connection
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onOpen = function( name, value ){}
+
+
+/**
+ * Override in your app to receive on close event for connection
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onClose = function( name, value ){}
+
+/**
  * Override in your app to receive "range" messages, e.g. sb.onRangeMessage = yourRangeFunction
  * @param  {String} name  Name of incoming route
  * @param  {String} value [description]
@@ -203,13 +218,10 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
 Spacebrew.Client.prototype._onOpen = function() {
     console.log("WebSockets connection opened");
     console.log("my name is: "+this.name);
-    var nameMsg = { "name": [
-    	{"name": this.name}
-   	]};
-	this.socket.send(JSON.stringify(nameMsg));
 
   	// send my config
   	this.updatePubSub();
+  	this.onOpen();
 }
 
 /**
@@ -245,6 +257,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 Spacebrew.Client.prototype._onClose = function() {
     console.log("WebSockets connection closed");
 	this._isConnected = false;
+	this.onClose();
 }
 Spacebrew.Client.prototype.__defineGetter__("name", function(){
     return this._name;
