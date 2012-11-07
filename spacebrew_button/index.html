@@ -46,7 +46,7 @@
       function setup (){
         // setup spacebrew
         sb = new Spacebrew.Client();
-        sb.description = "This is an example client which has a big red button you can push to send a message. It also listens for color events and will change it's color based on those messages.";
+        sb.description = "This is an example client which has a button you can push to send a message. It also listens for range and string input which will change the background color and text on the webpage respectively.";
 
         sb.addPublish( "buttonPress", "boolean", "false" );
         sb.addPublish( "randomRange", "range", "0" );
