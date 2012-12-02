@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+ *  URL Launcher :: Background  *
+ * 
+ *  A html file loads all required javascript files for the background.js script
+ *  to be able to run properly. The background.js script controls the url_launcher
+ *  and runs as a background process that stays alive even when tabs and windows
+ *  are closed.
+ *  
+ *  <br />Copyright (C) 2012 LAB at Rockwell Group http://lab.rockwellgroup.com
+ *
+ * @filename    background.html
+ * @author      The Lab (Julio Terra)
+ * @modified    10/23/2012
+ * @version     1.0.5
+ * 
+-->
+<html>
+
+  <head>
+    <script src="js/libs/jquery/jq.js"></script>
+    <script src="js/libs/lab/labjs-r3.js"></script>
+    <script src="js/libs/lab/sb-0.0.1.js"></script>
+    <script src="js/tab_manager.js"></script>
+    <script src="js/background.js"></script>
+    <script>
+      $(document).ready(function() {
+        setup();
+      });
+    </script>
+  </head>
+
+  <body>
+  </body>
+
+</html>
