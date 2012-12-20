@@ -1,0 +1,110 @@
+
+body {
+	display: block;
+	margin: 0px;
+	background-color: #EFF0F1;
+	height: 100%;
+}
+
+h1 {
+	display: block;
+	font-size: 1em;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0.5em;
+	-webkit-margin-start: 20px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+}
+
+#contentWrapper {
+	position: relative;
+	font-family: "Open Sans", "Verdana";
+	padding: 0px;
+	margin: 0px;
+}
+
+header, #statusMsgDiv, #deviceMsgDiv, #colorMsgDiv {
+	display: block;
+	padding: 20px 20px 20px 20px;
+	margin: 0px;
+	clear: both;
+	width: 660px;
+}
+
+header h1, #statusMsgDiv h1, #deviceMsgDiv h1, #colorMsgDiv h1 {
+	vertical-align: top;
+	display: inline-block;
+	font-size: 1em;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+	padding-right: 10px;
+	width:160px;
+}
+
+header p, #statusMsgDiv p, #deviceMsgDiv p, #colorMsgDiv p{
+	display: inline-block;
+	font-size: 0.7em;
+	-webkit-margin-after: 0px;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+	width:460px;
+}
+
+#deviceMsgDiv ul, #colorMsgDiv ul {
+	display: inline-block;
+	/*font-size: 0.7em;*/
+	-webkit-margin-after: 0px;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+	padding: 0px 0px;
+}
+
+#deviceMsgDiv li, #colorMsgDiv li {
+	text-align: left;
+	vertical-align: top;
+	display: inline-block;
+	padding-top: 0px;
+	width:130px;
+}
+
+div.actions  {
+	padding: 0px 0px 0px 0px;
+	display:inline-block;
+}
+
+#deviceMsgaccel h1, #deviceMsggyro h1, #deviceMsgcolor h1 {
+	font-size: 1em;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+	padding: 0px;
+	margin: 0px;
+}
+
+#deviceMsgaccel p, #deviceMsggyro p, #deviceMsgcolor p {
+	font-size: 0.7em;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: normal;
+	padding: 0px;
+	margin: 0px;
+}
+
+article, aside, details, figcaption, figure, 
+footer, hgroup, menu, nav, section {
+display: block;
+float: left;
+}

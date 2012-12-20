@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+    <title>Spacebrew button</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+    <!-- basic libraries -->
+    <script type="text/javascript" src="js/jquery/jq.js"></script>
+    <!-- Spacebrew libraries -->
+    <script type="text/javascript" src="js/sb.js"></script>
+    <script type="text/javascript">
+      
+      // Spacebrew Object
+      var sb;
+
+      // Form on the page
+      var form;
+
+      $(document).ready( function() {
+        setup();
+      });
+
+      //-------------------------------------------------------
+      function setup (){
+        // setup spacebrew
+        sb = new Spacebrew.Client();
+        sb.description = "This app sends text from an HTML form.";
+
+        sb.addPublish( "text", "string", "" );
+
+        sb.connect();
+
+        // listen to the mouse
+        var button = document.getElementById("button");
+      	button.onmousedown = onMouseDown;
+
+        form = document.getElementById("string");
+      }
+
+      //-------------------------------------------------------
+      function onMouseDown (evt){
+      	console.log("Sending message "+form.value); 
+        sb.send("text", "string", form.value);
+        sb.send("randomRange", "range", Math.floor(Math.random()*1024) );
+      }
+
+</script>
+		<!-- MAIN -->
+	</head>
+	<body>
+    <input id="string" style="height: 30px; width: 350px; font-size: 30px;"/>
+		<!-- <h1>Click to send a message to spacebrew</h1> -->
+    <a class="button" id="button">Send</a>
+   </body>
+</html>
