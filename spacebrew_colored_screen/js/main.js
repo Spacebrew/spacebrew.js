@@ -38,7 +38,7 @@ var state = {};
     state.sensors = [ "accel", "gyro" ];
     state.accel = { x: 0, y: 0, z: 0 };
     state.gyro = { alpha: 0, beta: 0, gamma: 0 };
-    state.color = { hue: 0, sat: 0, light: 0 };
+    state.color = { hue: 360, sat: 100, light: 100 };
     state.txtVisible = true;
 
     state.ids = {};
