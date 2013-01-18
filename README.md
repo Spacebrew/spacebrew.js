@@ -6,6 +6,10 @@ This repo contains the Spacebrew Library for Javascript along with documentation
 Current Version: 1.0.0
 Latest Update: January 16, 2013
 
+Jump to:
+* [Using the Spacebrew Javascript Library](#using-javascript-library)
+* [Spacebrew Library Examples](#javascript-library-examples)
+  
 About Spacebrew
 ===============
 Spacebrew is an open, dynamically re-routable software toolkit for choreographing interactive spaces. Or, in other words, a simple way to connect interactive things to one another. Every element you hook up to the system can subscribe to, and publish data feeds. Each data feed has a data type. There are three different data types supported by Spacebrew: boolean (true/false), number range (0-1023) or string (text). Once elements are set up, you can use a web based visual switchboard to connect or disconnect publishers and subscribers to each other. 
@@ -23,7 +27,6 @@ Import the javascript library into your project using a script tag in the approp
 ```
 <script src="path/sb.js"></script>
 <script src="path/your_scripts.js"></script>
-
 ```
   
 ###2. Create a Spacebrew object  
@@ -50,11 +53,11 @@ sb.addSubscribe( name, type );
 Spacebrew offers lifecycle event hooks for connection open and close events - `onOpen`, and `onClose`; and for incoming message events of each data type - `onStringMessage`, `onRangeMessage`, of `onBooleanMessage`. You need to define the message handler methods in order to capture data from your subcriptions data feeds.
   
 ```
-sb.onStringMessage = onString;
-sb.onRangeMessage = onRange;
-sb.onBooleanMessage = onBoolean;
-sb.onOpen = onOpen;
-sb.onClose = onClose;
+sb.onStringMessage = function onString( name, value );
+sb.onRangeMessage = function onRange( name, value );
+sb.onBooleanMessage = function onBoolean( name, value );
+sb.onOpen = function onOpen();
+sb.onClose = function onClose();
 ```
   
 ###5. Connect to Spacebrew
