@@ -2,86 +2,87 @@
 <html>
 	<head>
     <title>Spacebrew button</title>
+
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-    <!-- basic libraries -->
-    <script type="text/javascript" src="js/jquery/jq.js"></script>
-    <!-- Spacebrew libraries -->
+    <script type="text/javascript" src="js/jq.js"></script>
     <script type="text/javascript" src="js/sb.js"></script>
     <script type="text/javascript">
 
+      $(window).on("load", setup);
       
       // Spacebrew Object
       var sb;
 
-      // Vars for example
-      var index = 0;
-      var buttonPress = false;
-      var buttonText = "";
-
-      $(document).ready( function() {
-        setup();
-      });
-
-      function onRangeMessage( name, value ){
-        if (name == "color") {
-          console.log("received color message");
-          changeBGC(value);
-        }
-        incrementIndex();
-      }
-
-      function onStringMessage( name, value ){
-        // if it’s text
-        if (name == "text") {
-          console.log("received text message"); 
-          buttonText = value; 
-          document.getElementById("buttonMsg").innerHTML = value;        
-        } 
-        incrementIndex();
-      }
-
-      //-------------------------------------------------------
+      /**
+       * setup Configure spacebrew connection and adds the mousedown listener.
+       */
       function setup (){
-        // setup spacebrew
+        // create spacebrew client object
         sb = new Spacebrew.Client();
-        sb.description = "This is an example client which has a button you can push to send a message. It also listens for range and string input which will change the background color and text on the webpage respectively.";
 
+        // set the base description
+        sb.description("This is an example client which has a button you can push to send a message. It also listens for range and string input which will change the background color and text on the webpage respectively.");
+
+        // configure the publication and subscription feeds
         sb.addPublish( "buttonPress", "boolean", "false" );
         sb.addPublish( "randomRange", "range", "0" );
         sb.addSubscribe( "color", "range" );
         sb.addSubscribe( "text", "string" );
 
-        // Override Spacebrew events
-        // - this is how you catch events coming from Spacebrew
+        // override Spacebrew events - this is how you catch events coming from Spacebrew
         sb.onRangeMessage = onRangeMessage;
         sb.onStringMessage = onStringMessage;
 
+        // connect to spacbrew
         sb.connect();
 
-        // listen to the mouse
-      	window.addEventListener("mousedown", onMouseDown);
+        // listen to the mouse 
+      	$("#buttonMsg").on("mousedown", onButtonPress);
       }
 
-      //-------------------------------------------------------
-      function incrementIndex() {
-          index += 1;
-      }
-
-      //-------------------------------------------------------
+      /**
+       * changeBGC Function that changes the color using a range value as an input. It cycles between different
+       *           grey values.
+       * @param  {Integer} pColor Value used to set the color
+       */
       function changeBGC(pColor){
         var tColor = "rgb("+Math.floor(pColor/4)+","+Math.floor(pColor/4)+","+Math.floor(pColor/4)+")";
         document.body.style.background = tColor; //color;
-        console.log(tColor);
-        console.log("Changed color");
+        console.log("Changed color", tColor);
       }
 
-      //-------------------------------------------------------
-      function onMouseDown (evt){
+      /**
+       * onButtonPress Function that is called whenever the button is pressed.  
+       * @param  {Event object} evt Holds information about the button press event
+       */
+      function onButtonPress (evt){
       	console.log("Sending message"); 
         sb.send("buttonPress", "boolean", "true");
         sb.send("randomRange", "range", Math.floor(Math.random()*1024) );
+      }
+
+      /**
+       * onRangeMessage Function that is called whenever new spacebrew range messages are received.
+       *          It accepts two parameters:
+       * @param  {String} name    Holds name of the subscription feed channel
+       * @param  {Integer} value  Holds value received from the subscription feed
+       */
+      function onRangeMessage( name, value ){
+        console.log("received color message");
+        changeBGC(value);
+      }
+
+      /**
+       * onStringMessage Function that is called whenever new spacebrew string messages are received.
+       *          It accepts two parameters:
+       * @param  {String} name    Holds name of the subscription feed channel
+       * @param  {String} value   Holds text message received from the subscription feed
+       */
+      function onStringMessage( name, value ){
+        console.log("received text message ", value); 
+        document.getElementById("buttonMsg").innerHTML = value;        
       }
 
 </script>

@@ -1,56 +1,60 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-    <title>Spacebrew button</title>
+    <title>Spacebrew String</title>
+
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-    <!-- basic libraries -->
-    <script type="text/javascript" src="js/jquery/jq.js"></script>
-    <!-- Spacebrew libraries -->
+    <script type="text/javascript" src="js/jq.js"></script>
     <script type="text/javascript" src="js/sb.js"></script>
+
     <script type="text/javascript">
       
-      // Spacebrew Object
+      // when window loads call the setup method
+      $(window).on("load", setup);
+
+      // Variable that will hold the spacebrew client object
       var sb;
 
-      // Form on the page
-      var form;
-
-      $(document).ready( function() {
-        setup();
-      });
-
-      //-------------------------------------------------------
+      /**
+       * setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
+       */
       function setup (){
         // setup spacebrew
-        sb = new Spacebrew.Client();
-        sb.description = "This app sends text from an HTML form.";
+        sb = new Spacebrew.Client();  // create spacebrew client object
+        sb.description("This app sends text from an HTML form."); // set the app description
+        sb.addPublish("text", "string", "");  // create the publication feed
+        sb.connect();   // connect to spacebrew
 
-        sb.addPublish( "text", "string", "" );
-
-        sb.connect();
-
-        // listen to the mouse
-        var button = document.getElementById("button");
-      	button.onmousedown = onMouseDown;
-
-        form = document.getElementById("string");
+        // listen to button clicks
+        $("#button").on("mousedown", onMouseDown);
       }
 
-      //-------------------------------------------------------
+      /**
+       * onMouseDown Function that is called when the submit button is pressed. It reads the
+       *     text in the input box, and then sends it to spacebrew. It accepts a mouse event
+       *     object, though we don't use it in this example.
+       */
       function onMouseDown (evt){
-      	console.log("Sending message "+form.value); 
-        sb.send("text", "string", form.value);
-        sb.send("randomRange", "range", Math.floor(Math.random()*1024) );
+        var newString = $("#string").val();   // load text from input box
+        if (newString !== "") {               // if input box is not blank
+          console.log("Sending message " + newString); 
+          sb.send("text", "string", newString);   // send string to spacebrew
+          $("#string").val("");                   // clear the text box
+          $("#status").text("sent message: " + newString); // display the sent message in the browser         
+        }
       }
-
-</script>
-		<!-- MAIN -->
+    </script>
 	</head>
+
 	<body>
-    <input id="string" style="height: 30px; width: 350px; font-size: 30px;"/>
-		<!-- <h1>Click to send a message to spacebrew</h1> -->
-    <a class="button" id="button">Send</a>
+    <div>
+      <input id="string" style="height: 30px; width: 350px; font-size: 30px;"/>
+      <a class="button" id="button">Send</a>
+    </div>
+    <div id="status">
+    </div>
    </body>
+
 </html>
