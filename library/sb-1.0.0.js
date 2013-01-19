@@ -92,7 +92,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this._name = name || "javascript client";
 	if (window) {
-		this._name = (window.getQueryString('name') !== "" ? getQueryString('name') : this._name);
+		this._name = (window.getQueryString('name') !== "" ? unescape(getQueryString('name')) : this._name);
 	}
 	
 	/**
@@ -101,7 +101,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this._description = description || "spacebrew javascript client";
 	if (window) {
-		this._description = (window.getQueryString('description') !== "" ? getQueryString('description') : this._description);
+		this._description = (window.getQueryString('description') !== "" ? unescape(getQueryString('description')) : this._description);
 	}
 
 
@@ -111,7 +111,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this.server = server || "localhost";
 	if (window) {
-		this.server = (window.getQueryString('server') !== "" ? getQueryString('server') : this.server);
+		this.server = (window.getQueryString('server') !== "" ? unescape(getQueryString('server')) : this.server);
 	}
 
 	/**
@@ -316,7 +316,9 @@ Spacebrew.Client.prototype._onClose = function() {
  */
 Spacebrew.Client.prototype.name = function (newName){
 	if (newName) {
+		if (this._isConnected) return false;
 		this._name = newName;
+		this.config.description = this._name;
 	} 	
 	return this._name;	
 };

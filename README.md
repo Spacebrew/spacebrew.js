@@ -1,5 +1,5 @@
-Spacebrew Javascript Web Library and Examples
----------------------------------------------
+Spacebrew Javascript Web Library and Core Examples
+--------------------------------------------------
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
