@@ -40,8 +40,16 @@ var sb = new Spacebrew.Client( server, name, description );
 The constructor parameters, `server`, `name`, and `description`, are all optional. When running in a browser, the Spacebrew Client library will look for the server, app name, and app description in the query string; using `server`, `name`, and `description` as keys.  
   
 If server is not specified in the query string or constructor, then the app will attempt to connect to a Spacebrew server hosted locally. The name will default to the app's full URL, if no name is provided via the query string or constructor. The description will remain blank if no description is specified. If you want to connect to the cloud server just point spacebrew to `sandbox.spacebrew.cc`.  
-     
-###3. Configure Data Subscription and Publication Feeds  
+  
+###3. Configure Base Name and Description Feeds   
+You can also set the base app name and description using the `Spacebrew.Client` library's `name()` and `description()` methods. The app's name and description must be set before the Spacebrew connection is established.  
+  
+```
+sb.name("myApp")
+sb.description("this is a spacebrew app.")
+```
+       
+###4. Configure Data Subscription and Publication Feeds  
 The next step is adding the subscription and publication data feeds. Each one needs to be labelled and assigned an appropriate data type - `"string"`, `"range"`, of `"boolean"`. You can also optionally define a default value for any publication feed. 
 
 ```
@@ -49,7 +57,7 @@ sb.addPublish( name, type, default );
 sb.addSubscribe( name, type );
 ```
   
-###4. Define lifecycle and message event handler methods
+###5. Define lifecycle and message event handler methods
 Spacebrew offers lifecycle event hooks for connection open and close events - `onOpen`, and `onClose`; and for incoming message events of each data type - `onStringMessage`, `onRangeMessage`, of `onBooleanMessage`. You need to define the message handler methods in order to capture data from your subcriptions data feeds.
   
 ```
@@ -60,20 +68,20 @@ sb.onOpen = function onOpen();
 sb.onClose = function onClose();
 ```
   
-###5. Connect to Spacebrew
+###6. Connect to Spacebrew
 Now that you have configured the Spacebrew object it is time to connect to the Spacebrew server. 
   
 ```
 sb.connect();
 ```
   
-###6. Send messages
-The `send` method enables you to publish messages via one of the publication data feeds. It accepts three mandatory parameters, a channel name, a data type, and a value. The value needs to correspond to the data type, otherwise the message will be ignored by the server.
-  
+###7. Send messages  
+The `send` method enables you to publish messages via one of the publication data feeds. It accepts three mandatory parameters, a channel name, a data type, and a value. The value needs to correspond to the data type, otherwise the message will be ignored by the server.  
+    
 ```
 sb.send( name, type, value )
 ```
-  
+
 Javascript Library Examples
 ===========================
 
