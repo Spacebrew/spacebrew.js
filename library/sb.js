@@ -14,10 +14,14 @@
  * To import into your web apps, we recommend using the minimized version of this library, 
  * filename sb-1.0.0.min.js.
  *
+ * Latest Updates:
+ * - packaged library as a module when it is imported into a node server environment. This makes
+ * 	 it possible to use this library to connect to Spacebrew from a node server.
+ * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
  * @filename	sb-1.0.0.js
- * @version 	1.0.0
- * @date 		Jan 17, 2013
+ * @version 	1.0.1
+ * @date 		Jan 21, 2013
  * 
  */
 
@@ -51,7 +55,7 @@ if (!Function.prototype.bind) {
 
 var window = window || undefined;
 
-// var window = window || {};
+// if app is running in a browser, then define the getQueryString method
 if (window) {
 	if (!window['getQueryString']){
 		/**
@@ -71,10 +75,10 @@ if (window) {
 	}	
 }
 
-
+var WebSocket = WebSocket || {};
 
 /**
- * @namespace
+ * @namespace for Spacebrew library
  */
 var Spacebrew = Spacebrew || {};
 
@@ -87,6 +91,7 @@ var Spacebrew = Spacebrew || {};
  */
 Spacebrew.Client = function( server, name, description ){
 
+	console.log("building Spacebrew object")
 	/**
 	 * Name of app
 	 * @type {String}
@@ -102,7 +107,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this._description = description || "spacebrew javascript client";
 	if (window) {
-		this._description = (window.getQueryString('description') !== "" ? getQueryString('description') : this._description);
+		this._description = (window.getQueryString('description') !== "" ? window.getQueryString('description') : this._description);
 	}
 
 
@@ -112,7 +117,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this.server = server || "localhost";
 	if (window) {
-		this.server = (window.getQueryString('server') !== "" ? getQueryString('server') : this.server);
+		this.server = (window.getQueryString('server') !== "" ? window.getQueryString('server') : this.server);
 	}
 
 	/**
@@ -156,6 +161,7 @@ Spacebrew.Client.prototype.connect = function(){
 		this._isConnected = true;
 	} catch(e){
 		this._isConnected = false;
+		console.log("[Spacebrew.connect] connection attempt failed")
 	}
 }
 
@@ -346,4 +352,17 @@ Spacebrew.Client.prototype.description = function (newDesc){
 Spacebrew.Client.prototype.isConnected = function (){
 	return this._isConnected;	
 };
+
+// check if module has been defined, to determine if this is a node application
+var module = module || undefined;
+
+// if app is running in a node server environment then package Spacebrew library as a module
+if (!window && module) {
+	WebSocket = require("ws");
+	module.exports = {
+		Spacebrew: Spacebrew
+	} 
+	console.log("Configuring Spacebrew library as a module", module)
+}
+
 
