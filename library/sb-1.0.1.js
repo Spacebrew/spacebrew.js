@@ -362,7 +362,6 @@ if (!window && module) {
 	module.exports = {
 		Spacebrew: Spacebrew
 	} 
-	console.log("Configuring Spacebrew library as a module", module)
 }
 
 
