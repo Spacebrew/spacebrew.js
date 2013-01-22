@@ -158,7 +158,6 @@ Spacebrew.Client.prototype.connect = function(){
 		this.socket.onopen 		= this._onOpen.bind(this);
 		this.socket.onmessage 	= this._onMessage.bind(this);
 		this.socket.onclose 	= this._onClose.bind(this);
-		this._isConnected = true;
 	} catch(e){
 		this._isConnected = false;
 		console.log("[Spacebrew.connect] connection attempt failed")
@@ -271,6 +270,7 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
 Spacebrew.Client.prototype._onOpen = function() {
     console.log("WebSockets connection opened");
     console.log("my name is: "+this._name);
+	this._isConnected = true;
 
   	// send my config
   	this.updatePubSub();
