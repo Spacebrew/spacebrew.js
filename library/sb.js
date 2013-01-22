@@ -207,6 +207,15 @@ Spacebrew.Client.prototype.onBooleanMessage = function( name, value ){}
 Spacebrew.Client.prototype.onStringMessage = function( name, value ){}
 
 /**
+ * Override in your app to receive "custom" messages, e.g. sb.onCustomMessage = yourStringFunction
+ * @param  {String} name  Name of incoming route
+ * @param  {String} value [description]
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onCustomMessage = function( name, value ){}
+
+/**
  * Add a route you are publishing on 
  * @param {String} name Name of incoming route
  * @param {String} type "boolean", "range", or "string"
@@ -299,6 +308,8 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		case "range":
 			this.onRangeMessage( name, Number(value) );
 			break;
+		default:
+			this.onCustomMessage( name, value);
 	}
 }
 
