@@ -98,7 +98,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this._name = name || "javascript client";
 	if (window) {
-		this._name = (window.getQueryString('name') !== "" ? getQueryString('name') : this._name);
+		this._name = (window.getQueryString('name') !== "" ? unescape(window.getQueryString('name')) : this._name);
 	}
 	
 	/**
@@ -107,7 +107,7 @@ Spacebrew.Client = function( server, name, description ){
 	 */
 	this._description = description || "spacebrew javascript client";
 	if (window) {
-		this._description = (window.getQueryString('description') !== "" ? window.getQueryString('description') : this._description);
+		this._description = (window.getQueryString('description') !== "" ? unescape(window.getQueryString('description')) : this._description);
 	}
 
 
@@ -115,9 +115,9 @@ Spacebrew.Client = function( server, name, description ){
 	 * Spacebrew server to which the app will connect
 	 * @type {String}
 	 */
-	this.server = server || "localhost";
+	this.server = server || "sandbox.spacebrew.cc";
 	if (window) {
-		this.server = (window.getQueryString('server') !== "" ? window.getQueryString('server') : this.server);
+		this.server = (window.getQueryString('server') !== "" ? unescape(window.getQueryString('server')) : this.server);
 	}
 
 	/**
@@ -158,7 +158,6 @@ Spacebrew.Client.prototype.connect = function(){
 		this.socket.onopen 		= this._onOpen.bind(this);
 		this.socket.onmessage 	= this._onMessage.bind(this);
 		this.socket.onclose 	= this._onClose.bind(this);
-		this._isConnected = true;
 	} catch(e){
 		this._isConnected = false;
 		console.log("[Spacebrew.connect] connection attempt failed")
@@ -206,6 +205,15 @@ Spacebrew.Client.prototype.onBooleanMessage = function( name, value ){}
  * @public
  */
 Spacebrew.Client.prototype.onStringMessage = function( name, value ){}
+
+/**
+ * Override in your app to receive "custom" messages, e.g. sb.onCustomMessage = yourStringFunction
+ * @param  {String} name  Name of incoming route
+ * @param  {String} value [description]
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onCustomMessage = function( name, value ){}
 
 /**
  * Add a route you are publishing on 
@@ -271,6 +279,7 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
 Spacebrew.Client.prototype._onOpen = function() {
     console.log("WebSockets connection opened");
     console.log("my name is: "+this._name);
+	this._isConnected = true;
 
   	// send my config
   	this.updatePubSub();
@@ -299,6 +308,8 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		case "range":
 			this.onRangeMessage( name, Number(value) );
 			break;
+		default:
+			this.onCustomMessage( name, value);
 	}
 }
 
