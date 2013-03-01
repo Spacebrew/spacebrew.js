@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+    <title>Spacebrew Dice (Custom Data Example)</title>
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script type="text/javascript" src="js/jq.js"></script>
+    <script type="text/javascript" src="js/sb-1.0.3.js"></script>
+    <script type="text/javascript">
+
+		$(window).on("load", setup);
+	      
+		// Spacebrew Object
+		var sb;
+
+		/**
+	     * setup Configure spacebrew connection and adds the mousedown listener.
+	     */
+		function setup (){
+			// create spacebrew client object
+			sb = new Spacebrew.Client();
+
+			// set the base description
+			sb.description("This spacebrew example sends and receives custom messages.");
+
+			// configure the publication and subscription feeds
+			sb.addPublish( "roll the dice", "dice", "1" );
+			sb.addSubscribe( "remote dice roll", "dice" );
+
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onCustomMessage = onCustomMessage;
+
+			// connect to spacbrew
+			sb.connect();
+
+			// listen to the mouse 
+			$("#buttonMsg").on("mousedown", onButtonPress);
+		}	
+
+		/**
+	     * onButtonPress Function that is called whenever the button is pressed.  
+	     * @param  {Event object} evt Holds information about the button press event
+	     */
+		function onButtonPress (evt){
+			roll = Math.floor( (Math.random() * 6) + 1);
+		    console.log("[onButtonPress] dice rolled " + roll); 
+			$("#cur_roll").text(roll); // display the sent message in the browser         
+	        sb.send("roll the dice", "dice", roll);
+		}
+
+		/**
+		 * onCustomMessage Function that is called whenever new spacebrew custom messages are received.
+		 *          It accepts three parameters:
+		 * @param  {String} name    Holds name of the subscription feed channel
+		 * @param  {String} value 	Holds value received from the subscription feed
+		 * @param  {String} type 	Holds the custom message type
+		 */
+		function onCustomMessage( name, value, type ){
+			console.log("[onBooleanMessage] remote dice roll ", value);
+			if (type = "dice") {
+				$("#msg_received").text(value); // display the sent message in the browser         
+			}
+		}
+
+	</script>
+	</head>
+
+	<body>
+		<a class="button" id="buttonMsg">Roll the Dice</a>
+		<h2>
+			Local Roll of the Dice: <span id="cur_roll"/> 
+		</h2>
+		<h1>
+			Remote Roll of the Dice: <span id="msg_received"/>
+		</h1>
+
+	</body>
+
+</html>

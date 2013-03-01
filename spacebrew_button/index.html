@@ -1,96 +1,86 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-    <title>Spacebrew button</title>
+    <title>Spacebrew Button (Boolean Example)</title>
 
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
     <script type="text/javascript" src="js/jq.js"></script>
-    <script type="text/javascript" src="js/sb.js"></script>
+    <script type="text/javascript" src="js/sb-1.0.3.js"></script>
     <script type="text/javascript">
 
-      $(window).on("load", setup);
-      
-      // Spacebrew Object
-      var sb;
+		$(window).on("load", setup);
+	      
+		// Spacebrew Object
+		var sb;
 
-      /**
-       * setup Configure spacebrew connection and adds the mousedown listener.
-       */
-      function setup (){
-        // create spacebrew client object
-        sb = new Spacebrew.Client();
+		/**
+	     * setup Configure spacebrew connection and adds the mousedown listener.
+	     */
+		function setup (){
+			// create spacebrew client object
+			sb = new Spacebrew.Client();
 
-        // set the base description
-        sb.description("This is an example client which has a button you can push to send a message. It also listens for range and string input which will change the background color and text on the webpage respectively.");
+			// set the base description
+			sb.description("This spacebrew client sends and receives boolean messages.");
 
-        // configure the publication and subscription feeds
-        sb.addPublish( "buttonPress", "boolean", "false" );
-        sb.addPublish( "randomRange", "range", "0" );
-        sb.addSubscribe( "color", "range" );
-        sb.addSubscribe( "text", "string" );
+			// configure the publication and subscription feeds
+			sb.addPublish( "buttonPress", "boolean", "false" );
+			sb.addSubscribe( "toggleBackground", "boolean" );
 
-        // override Spacebrew events - this is how you catch events coming from Spacebrew
-        sb.onRangeMessage = onRangeMessage;
-        sb.onStringMessage = onStringMessage;
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onBooleanMessage = onBooleanMessage;
 
-        // connect to spacbrew
-        sb.connect();
+			// connect to spacbrew
+			sb.connect();
 
-        // listen to the mouse 
-      	$("#buttonMsg").on("mousedown", onButtonPress);
-      }
+			// listen to the mouse 
+			$("#buttonMsg").on("mousedown", onButtonPress);
+			$("#buttonMsg").on("mouseup", onButtonRelease);
+		}	
 
-      /**
-       * changeBGC Function that changes the color using a range value as an input. It cycles between different
-       *           grey values.
-       * @param  {Integer} pColor Value used to set the color
-       */
-      function changeBGC(pColor){
-        var tColor = "rgb("+Math.floor(pColor/4)+","+Math.floor(pColor/4)+","+Math.floor(pColor/4)+")";
-        document.body.style.background = tColor; //color;
-        console.log("Changed color", tColor);
-      }
+		/**
+	     * onButtonPress Function that is called whenever the button is pressed.  
+	     * @param  {Event object} evt Holds information about the button press event
+	     */
+		function onButtonPress (evt){
+		      	console.log("[onButtonPress] button has been pressed"); 
+	        sb.send("buttonPress", "boolean", "true");
+		}
 
-      /**
-       * onButtonPress Function that is called whenever the button is pressed.  
-       * @param  {Event object} evt Holds information about the button press event
-       */
-      function onButtonPress (evt){
-      	console.log("Sending message"); 
-        sb.send("buttonPress", "boolean", "true");
-        sb.send("randomRange", "range", Math.floor(Math.random()*1024) );
-      }
+		/**
+	     * onButtonRelease Function that is called whenever the button is released.  
+	     * @param  {Event object} evt Holds information about the button press event
+	     */
+		function onButtonRelease (evt){
+	      	console.log("[onButtonRelease] button has been released"); 
+	        sb.send("buttonPress", "boolean", "false");
+		}
 
-      /**
-       * onRangeMessage Function that is called whenever new spacebrew range messages are received.
-       *          It accepts two parameters:
-       * @param  {String} name    Holds name of the subscription feed channel
-       * @param  {Integer} value  Holds value received from the subscription feed
-       */
-      function onRangeMessage( name, value ){
-        console.log("received color message");
-        changeBGC(value);
-      }
+		/**
+		 * onBooleanMessage Function that is called whenever new spacebrew boolean messages are received.
+		 *          It accepts two parameters:
+		 * @param  {String} name    Holds name of the subscription feed channel
+		 * @param  {Boolean} value  Holds value received from the subscription feed
+		 */
+		function onBooleanMessage( name, value ){
+			console.log("[onBooleanMessage] boolean message received ", value);
+			if (value) {
+		        document.body.style.background = "rgb(100,255,100)"; 
+			} else {
+		        document.body.style.background = "rgb(220,220,220)"; 				
+			}
+		}
 
-      /**
-       * onStringMessage Function that is called whenever new spacebrew string messages are received.
-       *          It accepts two parameters:
-       * @param  {String} name    Holds name of the subscription feed channel
-       * @param  {String} value   Holds text message received from the subscription feed
-       */
-      function onStringMessage( name, value ){
-        console.log("received text message ", value); 
-        document.getElementById("buttonMsg").innerHTML = value;        
-      }
-
-</script>
-		<!-- MAIN -->
+	</script>
 	</head>
+
 	<body>
 		<h1>Click to send a message to spacebrew</h1>
 		<h3 id="numclicks"></h3>
-    <a class="button" id="buttonMsg">Click Me</a>
-   </body>
+		<a class="button" id="buttonMsg">Click Me</a>
+	</body>
+
 </html>

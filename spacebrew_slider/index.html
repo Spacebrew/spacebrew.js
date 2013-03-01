@@ -1,13 +1,13 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-	<title>Spacebrew Sliders</title> 
+	<title>Spacebrew Sliders (Range Example)</title> 
 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-    <script type="text/javascript" src="js/sb.js"></script>
+    <script type="text/javascript" src="js/sb-1.0.3.js"></script>
 
     <script type="text/javascript">
 
@@ -26,17 +26,22 @@
 		 */
 		function setupSpacebrew (){
 			console.log("Setting up spacebrew connection");
-			sb = new Spacebrew.Client(	undefined, 
-										"Spacebrew Sliders",
-										"Sliders for sending and displaying SpaceBrew range messages."
-									);
+			sb = new Spacebrew.Client();
+
+			sb.description("Sliders for sending and displaying SpaceBrew range messages.");
+
+			// configure the publication and subscription feeds
 			sb.addPublish("slider1", "range", "500");
 			sb.addPublish("slider2", "range", "500");
 			sb.addPublish("slider3", "range", "500");
 			sb.addSubscribe("slider1", "range");
 			sb.addSubscribe("slider2", "range");
 			sb.addSubscribe("slider3", "range");
+
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
 			sb.onRangeMessage = onRangeMessage;
+
+			// connect to spacbrew
 			sb.connect();
 		};
 
@@ -46,7 +51,6 @@
 		 */
 		function setupUI() {
 			console.log("Setting up the UI listeners");
-
 			// when the slider state changes it sends a message to spacebrew
 			$(".slider").bind( "change", function(event, ui) {
 				sb.send(event.target.id, "range", event.target.valueAsNumber);
@@ -71,19 +75,15 @@
 
 <div data-role="page">
 	<div data-role="header">
-		<h1>SpaceBrew GUI</h1>
+		<h1>SpaceBrew Sliders</h1>
 	</div>
 
 	<div data-role="content">	
-		<p>All these controls should work as inputs and outputs</p>
-
 		<form id="defaults">
 			<label for="slider1">Input Slider 1:</label>
 			<input type="range" class="slider" name="slider" id="slider1" value="500" min="0" max="1023"  />
-
 			<label for="slider2">Input Slider 2:</label>
 			<input type="range" class="slider" name="slider" id="slider2" value="500" min="0" max="1023"  />
-
 			<label for="slider3">Input Slider 3:</label>
 			<input type="range" class="slider" name="slider" id="slider3" value="500" min="0" max="1023"  />
 		</form>

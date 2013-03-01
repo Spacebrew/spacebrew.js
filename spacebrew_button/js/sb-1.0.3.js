@@ -15,14 +15,13 @@
  * filename sb-1.0.0.min.js.
  *
  * Latest Updates:
- * - updated boolean handling to fix bug where false values were resolving to true.
- * - packaged library as a module when it is imported into a node server environment. This makes
- * 	 it possible to use this library to connect to Spacebrew from a node server.
+ * - made it possible to update the port number of the spacebrew server.
+ * - fixed issue where description was not being updated via query string
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.0.2.js
- * @version 	1.0.2
- * @date 		Feb 5, 2013
+ * @filename	sb-1.0.3.js
+ * @version 	1.0.3
+ * @date 		Feb 28, 2013
  * 
  */
 
@@ -90,9 +89,10 @@ var Spacebrew = Spacebrew || {};
  * @param  {String} name        (Optional) Base name of app. Base name is overwritten if "name" is defined in query string; defaults to window.location.href.
  * @param  {String} description (Optional) Base description of app. Description name is overwritten if "description" is defined in query string;
  */
-Spacebrew.Client = function( server, name, description ){
+Spacebrew.Client = function( server, name, description, port, debug ){
 
-	console.log("building Spacebrew object")
+	this.debug = debug || false;
+
 	/**
 	 * Name of app
 	 * @type {String}
@@ -122,10 +122,22 @@ Spacebrew.Client = function( server, name, description ){
 	}
 
 	/**
+	 * Port number on which Spacebrew server is running
+	 * @type {Integer}
+	 */
+	this.port = port || 9000;
+	if (window) {
+		port = window.getQueryString('port');
+		if (port !== "" && !isNaN(port)) { 
+			this.port = port; 
+		} 
+	}
+
+	/**
 	 * Reference to WebSocket
 	 * @type {WebSocket}
 	 */
-	this.socket 	 = null;
+	this.socket = null;
 
 	/**
 	 * Configuration file for Spacebrew
@@ -155,13 +167,13 @@ Spacebrew.Client = function( server, name, description ){
  */
 Spacebrew.Client.prototype.connect = function(){
 	try {
-		this.socket 	 		= new WebSocket("ws://"+this.server+":9000");
+		this.socket 	 		= new WebSocket("ws://" + this.server + ":" + this.port);
 		this.socket.onopen 		= this._onOpen.bind(this);
 		this.socket.onmessage 	= this._onMessage.bind(this);
 		this.socket.onclose 	= this._onClose.bind(this);
 	} catch(e){
 		this._isConnected = false;
-		console.log("[Spacebrew.connect] connection attempt failed")
+		console.log("[connect:Spacebrew] connection attempt failed")
 	}
 }
 
@@ -214,7 +226,7 @@ Spacebrew.Client.prototype.onStringMessage = function( name, value ){}
  * @memberOf Spacebrew.Client
  * @public
  */
-Spacebrew.Client.prototype.onCustomMessage = function( name, value ){}
+Spacebrew.Client.prototype.onCustomMessage = function( name, value, type ){}
 
 /**
  * Add a route you are publishing on 
@@ -278,8 +290,7 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
  * @memberOf Spacebrew.Client
  */
 Spacebrew.Client.prototype._onOpen = function() {
-    console.log("WebSockets connection opened");
-    console.log("my name is: "+this._name);
+    console.log("[_onOpen:Spacebrew] Spacebrew connection opened, client name is: " + this._name);
 	this._isConnected = true;
 
   	// send my config
@@ -310,7 +321,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 			this.onRangeMessage( name, Number(value) );
 			break;
 		default:
-			this.onCustomMessage( name, value);
+			this.onCustomMessage( name, value, type );
 	}
 }
 
@@ -320,7 +331,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
  * @memberOf Spacebrew.Client
  */
 Spacebrew.Client.prototype._onClose = function() {
-    console.log("WebSockets connection closed");
+    console.log("[_onClose:Spacebrew] Spacebrew connection closed");
 	this._isConnected = false;
 	this.onClose();
 };
@@ -334,8 +345,13 @@ Spacebrew.Client.prototype._onClose = function() {
  *                  because the name must be configured before connection is made.
  */
 Spacebrew.Client.prototype.name = function (newName){
-	if (newName) {
-		this._name = newName;
+	if (newName) {								// if a name has been passed in then update it
+		if (this._isConnected) return false;  	// if already connected we can't update name
+		this._name = newName;	
+		if (window) {
+			this._name = (window.getQueryString('name') !== "" ? unescape(window.getQueryString('name')) : this._name);
+		}
+		this.config.name = this._name;			// update spacebrew config file
 	} 	
 	return this._name;	
 };
@@ -349,10 +365,13 @@ Spacebrew.Client.prototype.name = function (newName){
  *                  because the description must be configured before connection is made.
  */
 Spacebrew.Client.prototype.description = function (newDesc){
-	if (newDesc) {
-		if (this._isConnected) return false;
-		this._description = newDesc;
-		this.config.description = this._description;
+	if (newDesc) {								// if a description has been passed in then update it
+		if (this._isConnected) return false;  	// if already connected we can't update description
+		this._description = newDesc || "spacebrew javascript client";
+		if (window) {
+			this._description = (window.getQueryString('description') !== "" ? unescape(window.getQueryString('description')) : this._description);
+		}
+		this.config.description = this._description;	// update spacebrew config file
 	} 
 	return this._description;	
 };
