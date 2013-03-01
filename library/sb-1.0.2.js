@@ -15,13 +15,14 @@
  * filename sb-1.0.0.min.js.
  *
  * Latest Updates:
+ * - updated boolean handling to fix bug where false values were resolving to true.
  * - packaged library as a module when it is imported into a node server environment. This makes
  * 	 it possible to use this library to connect to Spacebrew from a node server.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.0.0.js
- * @version 	1.0.1
- * @date 		Jan 21, 2013
+ * @filename	sb-1.0.2.js
+ * @version 	1.0.2
+ * @date 		Feb 5, 2013
  * 
  */
 
