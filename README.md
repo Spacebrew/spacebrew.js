@@ -3,13 +3,13 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 1.0.3
-Latest Update: February 28, 2013
-Developed By: Brett Renfer, Eric Eckhard-Ishii, Julio Terra (LAB @ Rockwell Group)
+Current Version: 1.0.3  
+Latest Update: February 28, 2013  
+Developed By: Brett Renfer, Eric Eckhard-Ishii, Julio Terra (LAB @ Rockwell Group)  
 
 Jump to:
-* [Using the Spacebrew Javascript Library](#using-javascript-library)
-* [Spacebrew Library Examples](#javascript-library-examples)
+* [Using the Spacebrew Javascript Library](#using-javascript-library)  
+* [Spacebrew Library Examples](#javascript-library-examples)  
   
 About Spacebrew
 ===============
@@ -34,11 +34,11 @@ Import the javascript library into your project using a script tag in the approp
 In `your_scripts.js` file, the first thing you need to do is create new instance of a Spacebrew Client object using the `Spacebrew.Client` constructor and assign it to a variable or object attribute.  
   
 ```
-var sb = new Spacebrew.Client( server, name, description );
+var sb = new Spacebrew.Client( server, name, description, port );
 ```
   
 **Constructor Parameters**
-The constructor parameters, `server`, `name`, and `description`, are all optional. When running in a browser, the Spacebrew Client library will look for the server, app name, and app description in the query string; using `server`, `name`, and `description` as keys.  
+The constructor parameters, `server`, `name`, and `description`, `port` are all optional. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
   
 If server is not specified in the query string or constructor, then the app will attempt to connect to a Spacebrew server hosted locally. The name will default to the app's full URL, if no name is provided via the query string or constructor. The description will remain blank if no description is specified. If you want to connect to the cloud server just point spacebrew to `sandbox.spacebrew.cc`.  
   
@@ -65,6 +65,7 @@ Spacebrew offers lifecycle event hooks for connection open and close events - `o
 sb.onStringMessage = function onString( name, value );
 sb.onRangeMessage = function onRange( name, value );
 sb.onBooleanMessage = function onBoolean( name, value );
+sb.onCustomMessage = function onBoolean( name, value, type );
 sb.onOpen = function onOpen();
 sb.onClose = function onClose();
 ```
