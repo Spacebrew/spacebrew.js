@@ -3,8 +3,9 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 1.0.0
-Latest Update: January 16, 2013
+Current Version: 1.0.3
+Latest Update: February 28, 2013
+Developed By: Brett Renfer, Eric Eckhard-Ishii, Julio Terra (LAB @ Rockwell Group)
 
 Jump to:
 * [Using the Spacebrew Javascript Library](#using-javascript-library)
@@ -25,7 +26,7 @@ Before you get started you need to download the spacebrew library, and add it to
 Import the javascript library into your project using a script tag in the appropriate html page. We usually include the page's javascript code in a separate file as well. This file should be imported after the library.  
   
 ```
-<script src="path/sb.js"></script>
+<script src="path/sb-1.0.3.js"></script>
 <script src="path/your_scripts.js"></script>
 ```
   
@@ -87,17 +88,22 @@ Javascript Library Examples
 
 Here is a list of the core examples that are included in this repo. These examples were designed to help you get started building web apps that connect to other applications, objects and spaces via Spacebrew.
 
-###Button
-Web app with a button that sends a boolean value and a random range value every time the button is clicked.
+###Button (Boolean Example)
+Web app with a button that publishes a boolean value every time the button is clicked. It also subscribes to boolean messages, which change the web app's background color.
   
-###Graph
+###Slider (Range Example)
+Web app that subscribes and publishes range values and features three sliders that are used to send and display range values to and from Spacebrew.  
+  
+###String Example
+Web app with a text box publishes text messages to Spacebrew. App also subscribes to string messages, which are displayed underneath the text box.
+
+###Dice (Custom Data Type Example)
+Web app that publishes and subscribes to the custom data type called dice. It features a button that generates a random number between 1 and 6.
+
+###Graph (App Moved to Wildstyle Examples)
 Web app that features a graph that maps values received via three different subscription channels. It also features inputs for string and boolean values. These values are displayed in lists. 
   
-###Slider
-Web app with three sliders that can be used to send range values to Spacebrew, or to display range values that are received from Spacebrew.  
-  
-###String
-Web app with a text box that allows you to send text messages to Spacebrew.
+
   
 License  
 =======  

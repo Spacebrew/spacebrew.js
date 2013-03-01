@@ -1,60 +1,84 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-    <title>Spacebrew String</title>
+		<title>Spacebrew String</title>
 
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
-    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-    <script type="text/javascript" src="js/jq.js"></script>
-    <script type="text/javascript" src="js/sb.js"></script>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+		<script type="text/javascript" src="js/jq.js"></script>
+		<script type="text/javascript" src="js/sb-1.0.3.js"></script>
 
-    <script type="text/javascript">
-      
-      // when window loads call the setup method
-      $(window).on("load", setup);
+		<script type="text/javascript">
+		  
+			// when window loads call the setup method
+			$(window).on("load", setup);
 
-      // Variable that will hold the spacebrew client object
-      var sb;
+			// Variable that will hold the spacebrew client object
+			var sb;
 
-      /**
-       * setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
-       */
-      function setup (){
-        // setup spacebrew
-        sb = new Spacebrew.Client();  // create spacebrew client object
-        sb.description("This app sends text from an HTML form."); // set the app description
-        sb.addPublish("text", "string", "");  // create the publication feed
-        sb.connect();   // connect to spacebrew
+			/**
+			* setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
+			*/
+			function setup (){
+				// setup spacebrew
+				sb = new Spacebrew.Client();  // create spacebrew client object
+				sb.description("This app sends text from an HTML form."); // set the app description
 
-        // listen to button clicks
-        $("#button").on("mousedown", onMouseDown);
-      }
+		        // create the spacebrew subscription channels
+				sb.addPublish("text", "string", "");	// create the publication feed
+				sb.addSubscribe("text", "string");		// create the subscription feed
 
-      /**
-       * onMouseDown Function that is called when the submit button is pressed. It reads the
-       *     text in the input box, and then sends it to spacebrew. It accepts a mouse event
-       *     object, though we don't use it in this example.
-       */
-      function onMouseDown (evt){
-        var newString = $("#string").val();   // load text from input box
-        if (newString !== "") {               // if input box is not blank
-          console.log("Sending message " + newString); 
-          sb.send("text", "string", newString);   // send string to spacebrew
-          $("#string").val("");                   // clear the text box
-          $("#status").text("sent message: " + newString); // display the sent message in the browser         
-        }
-      }
-    </script>
+				// configure the publication and subscription feeds
+				sb.onStringMessage = onStringMessage;		
+
+				// connect to spacbrew
+				sb.connect();  
+
+				// listen to button clicks
+				$("#button").on("mousedown", onMouseDown);
+			}
+
+			/**
+			* onMouseDown Function that is called when the submit button is pressed. It reads the
+			*     text in the input box, and then sends it to spacebrew. It accepts a mouse event
+			*     object, though we don't use it in this example.
+			*/
+			function onMouseDown (evt){
+				var newString = $("#string").val();   // load text from input box
+				if (newString !== "") {               // if input box is not blank
+					console.log("Sending message " + newString); 
+					sb.send("text", "string", newString);   // send string to spacebrew
+					$("#string").val("");                   // clear the text box
+					$("#status").text(newString); // display the sent message in the browser         
+				}
+			}
+
+			/**
+			 * onStringMessage Function that is called whenever new spacebrew string messages are received.
+			 *          It accepts two parameters:
+			 * @param  {String} name    Holds name of the subscription feed channel
+			 * @param  {String} value 	Holds value received from the subscription feed
+			 */
+			function onStringMessage( name, value ){
+				console.log("[onBooleanMessage] boolean message received ", value);
+				$("#msg_received").text(value); // display the sent message in the browser         
+			}
+
+	    </script>
 	</head>
 
 	<body>
-    <div>
-      <input id="string" style="height: 30px; width: 350px; font-size: 30px;"/>
-      <a class="button" id="button">Send</a>
-    </div>
-    <div id="status">
-    </div>
-   </body>
+		<div>
+			<input id="string" style="height: 30px; width: 350px; font-size: 30px;"/>
+			<a class="button" id="button">Send</a>
+		</div>
+		<h2>
+			Sent Message: <span id="status"/>
+		</h2>
+		<h1>
+			<b>Received Message: </b><span id="msg_received"/>
+		</h1>
+	</body>
 
 </html>
