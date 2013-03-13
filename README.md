@@ -38,7 +38,7 @@ var sb = new Spacebrew.Client( server, name, description, port );
 ```
   
 **Constructor Parameters**
-The constructor parameters, `server`, `name`, and `description`, `port` are all optional. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
+The constructor parameters, `server`, `name`, `description`, and `port` are all optional. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
   
 If server is not specified in the query string or constructor, then the app will attempt to connect to a Spacebrew server hosted locally. The name will default to the app's full URL, if no name is provided via the query string or constructor. The description will remain blank if no description is specified. If you want to connect to the cloud server just point spacebrew to `sandbox.spacebrew.cc`.  
   
@@ -51,7 +51,7 @@ sb.description("this is a spacebrew app.")
 ```
        
 ###4. Configure Data Subscription and Publication Feeds  
-The next step is adding the subscription and publication data feeds. Each one needs to be labelled and assigned an appropriate data type - `"string"`, `"range"`, of `"boolean"`. You can also optionally define a default value for any publication feed. 
+The next step is adding the subscription and publication data feeds. Each one needs to be labelled and assigned an appropriate data type - `"string"`, `"range"`, `"boolean"` (custom data types are also supported, the names for these data types are arbitrary, as long as the publisher and subscriber feature the same name). You can also optionally define a default value for any publication feed. 
 
 ```
 sb.addPublish( name, type, default );

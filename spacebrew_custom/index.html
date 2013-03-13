@@ -59,8 +59,13 @@
 		 * @param  {String} type 	Holds the custom message type
 		 */
 		function onCustomMessage( name, value, type ){
-			console.log("[onBooleanMessage] remote dice roll ", value);
+			console.log("[onCustomMessage] remote dice roll ", value);
 			if (type = "dice") {
+				if (isNaN(value)) {
+					value = "you can't cheat the house, that's not a dice roll";
+				} else {
+					if (value > 6 || value <= 0) value = "you can't cheat the house, that's not a dice roll";
+				}
 				$("#msg_received").text(value); // display the sent message in the browser         
 			}
 		}
