@@ -12,16 +12,17 @@
  * more about Spacebrew here: http://docs.spacebrew.cc/
  *
  * To import into your web apps, we recommend using the minimized version of this library, 
- * filename sb-1.0.0.min.js.
+ * filename sb-1.0.4.min.js.
  *
  * Latest Updates:
  * - enable client apps to register for admin privileges.
  * - added methods to handle admin messages and to update routes.
+ * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
  * @filename	sb-1.0.4.js
  * @version 	1.0.4
- * @date 		Mar 13, 2013
+ * @date 		Mar 18, 2013
  * 
  */
 
@@ -185,11 +186,12 @@ Spacebrew.Client = function( server, name, description, port, debug, admin ){
 
 	this.admin_config = [
 			{
-				admin: admin ? (admin == true) : false
+				admin: true
 			}
 		];		
 
 	this.admin = {
+		active: admin, 
 		clients: []
 	}
 
@@ -213,6 +215,22 @@ Spacebrew.Client.prototype.connect = function(){
 	} catch(e){
 		this._isConnected = false;
 		console.log("[connect:Spacebrew] connection attempt failed")
+	}
+}
+
+/**
+ * Close Spacebrew connection
+ * @memberOf Spacebrew.Client
+ */
+Spacebrew.Client.prototype.close = function(){
+	try {
+		if (this._isConnected == true) {
+			this.socket.close();
+			this._isConnected = false;
+			console.log("[close:Spacebrew] closing websocket connection")
+		}		
+	} catch (e) {		
+		this._isConnected = false;
 	}
 }
 
@@ -301,7 +319,7 @@ Spacebrew.Client.prototype.addSubscribe = function( name, type ){
 Spacebrew.Client.prototype.updatePubSub = function(){
 	if (this._isConnected) {
 		this.socket.send(JSON.stringify({"config": this.client_config}));
-		this.socket.send(JSON.stringify({"admin": this.admin_config}));
+		if (this.admin.active) this.socket.send(JSON.stringify({"admin": this.admin_config}));
 	}
 }
 
@@ -349,6 +367,7 @@ Spacebrew.Client.prototype._onOpen = function() {
  */
 Spacebrew.Client.prototype._onMessage = function( e ){
 	var data = JSON.parse(e.data);
+
 
 	// handle client messages 
 	if (data["message"]) {
