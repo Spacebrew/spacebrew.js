@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 
     <script type="text/javascript" src="js/jq.js"></script>
-    <script type="text/javascript" src="js/sb-1.0.4.js"></script>
+	<script type="text/javascript" src="js/sb-1.1.0.js"></script>
     <script type="text/javascript">
 
 		$(window).on("load", setup);
@@ -24,6 +24,7 @@
 			sb = new Spacebrew.Client();
 
 			// set the base description
+			sb.name("button_example");
 			sb.description("This spacebrew client sends and receives boolean messages.");
 
 			// configure the publication and subscription feeds

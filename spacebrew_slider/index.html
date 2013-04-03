@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-    <script type="text/javascript" src="js/sb-1.0.4.js"></script>
+	<script type="text/javascript" src="js/sb-1.1.0.js"></script>
 
     <script type="text/javascript">
 
@@ -28,6 +28,7 @@
 			console.log("Setting up spacebrew connection");
 			sb = new Spacebrew.Client();
 
+			sb.name("slider_example");
 			sb.description("Sliders for sending and displaying SpaceBrew range messages.");
 
 			// configure the publication and subscription feeds

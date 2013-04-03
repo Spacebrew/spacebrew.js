@@ -7,7 +7,7 @@
 		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 		<script type="text/javascript" src="js/jq.js"></script>
-		<script type="text/javascript" src="js/sb-1.0.4.js"></script>
+		<script type="text/javascript" src="js/sb-1.1.0.js"></script>
 
 		<script type="text/javascript">
 		  
@@ -23,6 +23,8 @@
 			function setup (){
 				// setup spacebrew
 				sb = new Spacebrew.Client();  // create spacebrew client object
+
+				sb.name("string_example");
 				sb.description("This app sends text from an HTML form."); // set the app description
 
 		        // create the spacebrew subscription channels
