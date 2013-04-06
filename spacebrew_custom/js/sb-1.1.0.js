@@ -19,8 +19,8 @@
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.1.0-alpha.js
- * @version 	1.1.0-alpha
+ * @filename		sb-1.1.0.js
+ * @version 		1.1.0
  * @date 		Mar 24, 2013
  * 
  */
