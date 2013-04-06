@@ -3,8 +3,8 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 1.0.3  
-Latest Update: February 28, 2013  
+Current Version: 1.1.0  
+Latest Update: March 24, 2013  
 Developed By: Brett Renfer, Eric Eckhard-Ishii, Julio Terra (LAB @ Rockwell Group)  
 
 Jump to:
@@ -34,11 +34,11 @@ Import the javascript library into your project using a script tag in the approp
 In `your_scripts.js` file, the first thing you need to do is create new instance of a Spacebrew Client object using the `Spacebrew.Client` constructor and assign it to a variable or object attribute.  
   
 ```
-var sb = new Spacebrew.Client( server, name, description, port );
+var sb = new Spacebrew.Client( server, name, description, options );
 ```
   
 **Constructor Parameters**
-The constructor parameters, `server`, `name`, `description`, and `port` are all optional. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
+The constructor parameters, `server`, `name`, `description`, and `options` are all optional. The options parameter supports two options: `port`, an integer that specifies the port number of the spacebrew server, and `debug`, a boolean that turns on console messages when set to true. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
   
 If server is not specified in the query string or constructor, then the app will attempt to connect to a Spacebrew server hosted locally. The name will default to the app's full URL, if no name is provided via the query string or constructor. The description will remain blank if no description is specified. If you want to connect to the cloud server just point spacebrew to `sandbox.spacebrew.cc`.  
   
