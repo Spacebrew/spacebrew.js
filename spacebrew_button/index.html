@@ -21,7 +21,7 @@
 	     */
 		function setup (){
 			// create spacebrew client object
-			sb = new Spacebrew.Client();
+			sb = new Spacebrew.Client({reconnect:true});
 
 			// set the base description
 			sb.name("button_example");
