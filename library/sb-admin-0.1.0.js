@@ -18,16 +18,19 @@
  * - added methods to handle admin messages and to update routes.
  * 
  * @author 		Julio Terra
- * @filename	sb-admin-0.1.0.js
- * @version 	0.1.0
- * @date 		Mar 18, 2013
+ * @filename	sb-admin-0.1.1.js
+ * @version 	0.1.1
+ * @date 		April 8, 2013
  * 
  */
 
 Spacebrew.Admin = {}
 
 Spacebrew.Admin.admin = {
-		config: { admin: true } 
+		config: { 
+			admin: true 
+			, no_msgs: true
+		} 
 		, active: true
 		, remoteAddress: undefined
 		, clients: []
@@ -35,7 +38,7 @@ Spacebrew.Admin.admin = {
 	}
 
 Spacebrew.Admin.connectAdmin = function () {
-	this.socket.send(JSON.stringify({"admin": this.admin.config}));	
+	this.socket.send(JSON.stringify(this.admin.config));	
 }
 
 /**

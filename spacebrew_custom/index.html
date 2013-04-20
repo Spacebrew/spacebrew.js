@@ -8,23 +8,30 @@
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 
     <script type="text/javascript" src="js/jq.js"></script>
-	<script type="text/javascript" src="js/sb-1.1.0.js"></script>
+	<script type="text/javascript" src="js/sb-1.2.0.js"></script>
     <script type="text/javascript">
 
 		$(window).on("load", setup);
 	      
 		// Spacebrew Object
-		var sb;
+		var sb
+			, app_name = "custom example"
+			;
 
 		/**
 	     * setup Configure spacebrew connection and adds the mousedown listener.
 	     */
 		function setup (){
+			var random_id = "0000" + Math.floor(Math.random() * 10000)
+				;
+
+			app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
 			// create spacebrew client object
 			sb = new Spacebrew.Client();
 
 			// set the base description
-			sb.name("custom example");
+			sb.name(app_name);
 			sb.description("This spacebrew example sends and receives custom messages.");
 
 			// configure the publication and subscription feeds
@@ -33,6 +40,7 @@
 
 			// override Spacebrew events - this is how you catch events coming from Spacebrew
 			sb.onCustomMessage = onCustomMessage;
+			sb.onOpen = onOpen;
 
 			// connect to spacbrew
 			sb.connect();
@@ -40,6 +48,13 @@
 			// listen to the mouse 
 			$("#buttonMsg").on("mousedown", onButtonPress);
 		}	
+
+		/**
+		 * Function that is called when Spacebrew connection is established
+		 */
+		function onOpen() {
+			$("#name").html("Connected as <strong>" + app_name + "</strong>");
+		}
 
 		/**
 	     * onButtonPress Function that is called whenever the button is pressed.  
@@ -82,6 +97,9 @@
 		<h1>
 			Remote Roll of the Dice: <span id="msg_received"/>
 		</h1>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
 
 	</body>
 

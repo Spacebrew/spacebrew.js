@@ -7,24 +7,31 @@
 		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 		<script type="text/javascript" src="js/jq.js"></script>
-		<script type="text/javascript" src="js/sb-1.1.0.js"></script>
+		<script type="text/javascript" src="js/sb-1.2.0.js"></script>
 
 		<script type="text/javascript">
 		  
 			// when window loads call the setup method
 			$(window).on("load", setup);
 
-			// Variable that will hold the spacebrew client object
-			var sb;
+			// Spacebrew Object
+			var sb
+				, app_name = "string example"
+				;
 
 			/**
 			* setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
 			*/
 			function setup (){
+				var random_id = "0000" + Math.floor(Math.random() * 10000)
+					;
+
+				app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
 				// setup spacebrew
 				sb = new Spacebrew.Client();  // create spacebrew client object
 
-				sb.name("string_example");
+				sb.name(app_name);
 				sb.description("This app sends text from an HTML form."); // set the app description
 
 		        // create the spacebrew subscription channels
@@ -33,12 +40,20 @@
 
 				// configure the publication and subscription feeds
 				sb.onStringMessage = onStringMessage;		
+				sb.onOpen = onOpen;
 
 				// connect to spacbrew
 				sb.connect();  
 
 				// listen to button clicks
 				$("#button").on("mousedown", onMouseDown);
+			}
+
+			/**
+			 * Function that is called when Spacebrew connection is established
+			 */
+			function onOpen() {
+				$("#name").html("Connected as <strong>" + app_name + "</strong>");
 			}
 
 			/**
@@ -81,6 +96,10 @@
 		<h1>
 			<b>Received Message: </b><span id="msg_received"/>
 		</h1>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
+
 	</body>
 
 </html>

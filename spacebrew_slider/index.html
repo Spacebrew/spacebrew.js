@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-	<script type="text/javascript" src="js/sb-1.1.0.js"></script>
+	<script type="text/javascript" src="js/sb-1.2.0.js"></script>
 
     <script type="text/javascript">
 
@@ -17,18 +17,25 @@
 		// wher the jquery mobile is ready to initialize the UI call the setUI function 
 		$(document).bind("pageinit", setupUI);
 
-		// variable that holds the spacebrew client object
-		var sb;
+		// Spacebrew Object
+		var sb
+			, app_name = "slider example"
+			;
 
 		/**
 		 * setupSpacebrew Function that creates and configures the connection to the Spacebrew server.
 		 * 				  It is called when the page loads.
 		 */
 		function setupSpacebrew (){
+			var random_id = "0000" + Math.floor(Math.random() * 10000)
+				;
+
+			app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
 			console.log("Setting up spacebrew connection");
 			sb = new Spacebrew.Client();
 
-			sb.name("slider_example");
+			sb.name(app_name);
 			sb.description("Sliders for sending and displaying SpaceBrew range messages.");
 
 			// configure the publication and subscription feeds
@@ -41,10 +48,19 @@
 
 			// override Spacebrew events - this is how you catch events coming from Spacebrew
 			sb.onRangeMessage = onRangeMessage;
+			sb.onOpen = onOpen;
 
 			// connect to spacbrew
 			sb.connect();
 		};
+
+		/**
+		 * Function that is called when Spacebrew connection is established
+		 */
+		function onOpen() {
+			$("#name").html("Connected as <strong>" + app_name + "</strong>");
+		}
+
 
 		/**
 		 * setupUI Function that create the event listeners for the sliders. It creates an callback
@@ -88,6 +104,9 @@
 			<label for="slider3">Input Slider 3:</label>
 			<input type="range" class="slider" name="slider" id="slider3" value="500" min="0" max="1023"  />
 		</form>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
 
 	</div><!-- /content -->
 </div><!-- /page -->

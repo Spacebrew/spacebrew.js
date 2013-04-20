@@ -3,13 +3,14 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 1.1.0  
-Latest Update: March 24, 2013  
-Developed By: Brett Renfer, Eric Eckhard-Ishii, Julio Terra (LAB @ Rockwell Group)  
+Current Version: 	1.2.0  
+Latest Update: 		April 20, 2013   
+Main Contributors: 	Brett Renfer, Eric Eckhard-Ishii, Julio Terra   
 
 Jump to:
 * [Using the Spacebrew Javascript Library](#using-javascript-library)  
 * [Spacebrew Library Examples](#javascript-library-examples)  
+* [Using the Spacebrew Admin Library](#using-spacebrew-admin-library)  
   
 About Spacebrew
 ===============
@@ -26,7 +27,7 @@ Before you get started you need to download the spacebrew library, and add it to
 Import the javascript library into your project using a script tag in the appropriate html page. We usually include the page's javascript code in a separate file as well. This file should be imported after the library.  
   
 ```
-<script src="path/sb-1.0.3.js"></script>
+<script src="path/sb-1.2.0.js"></script>
 <script src="path/your_scripts.js"></script>
 ```
   
@@ -38,7 +39,7 @@ var sb = new Spacebrew.Client( server, name, description, options );
 ```
   
 **Constructor Parameters**
-The constructor parameters, `server`, `name`, `description`, and `options` are all optional. The options parameter supports two options: `port`, an integer that specifies the port number of the spacebrew server, and `debug`, a boolean that turns on console messages when set to true. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
+The constructor parameters, `server`, `name`, `description`, and `options` are all optional. The options parameter supports two options: `port`, an integer that specifies the port number of the spacebrew server, `debug`, a boolean value that turns on console messages when set to true, and `reconnect`, a boolean variable that turns off automatic reconnect when set to false. When running in a browser, the Spacebrew Client library will look for the server hostname, app name, app description, and server port setting in the query string; using `server`, `name`, `description`, `port` as keys.  
   
 If server is not specified in the query string or constructor, then the app will attempt to connect to a Spacebrew server hosted locally. The name will default to the app's full URL, if no name is provided via the query string or constructor. The description will remain blank if no description is specified. If you want to connect to the cloud server just point spacebrew to `sandbox.spacebrew.cc`.  
   
@@ -105,6 +106,10 @@ Web app that publishes and subscribes to the custom data type called dice. It fe
 Web app that features a graph that maps values received via three different subscription channels. It also features inputs for string and boolean values. These values are displayed in lists. 
   
 
+Using Spacebrew Admin Library
+==============================   
+  
+You can also integrate admin functionality directly into yor spacebrew client applications using the Spacebrew admin library along with the standard javascript library. Please note that this library is still in early development phases, which means that it will change and evolve a lot over the coming months. we will document the process for adding admin functionality into your client apps in the coming weeks.  
   
 License  
 =======  

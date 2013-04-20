@@ -15,13 +15,14 @@
  * filename sb-1.0.4.min.js.
  *
  * Latest Updates:
+ * - reconnect to spacebrew if connection lost
  * - enable client apps to extend libs with admin functionality.
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename		sb-1.1.0.js
- * @version 		1.1.0
- * @date 		Mar 24, 2013
+ * @filename	sb-1.2.0.js
+ * @version 	1.2.0
+ * @date 		April 20, 2013
  * 
  */
 
@@ -123,13 +124,27 @@ Spacebrew.Client = function( server, name, description, options ){
 
 	var options = options || {};
 
+	// check if the server variable is an object that holds all config values
+	if (server != undefined) {
+		if (toString.call(server) !== '[object String]') {
+			name = server.name || undefined;
+			description = server.description || undefined;
+			options.port = server.port || undefined;
+			options.debug = server.debug || false;
+			options.reconnect = server.reconnect || false;
+			server = server.server || undefined;
+		}	
+	}
+
 	this.debug = options.debug || false;
+	this.reconnect = options.reconnect || true;
+	this.reconnect_timer = undefined;
 
 	/**
 	 * Name of app
 	 * @type {String}
 	 */
-	this._name = name || "javascript client";
+	this._name = name || "javascript client #";
 	if (window) {
 		this._name = (window.getQueryString('name') !== "" ? unescape(window.getQueryString('name')) : this._name);
 	}
@@ -204,6 +219,7 @@ Spacebrew.Client.prototype.connect = function(){
 		this.socket.onopen 		= this._onOpen.bind(this);
 		this.socket.onmessage 	= this._onMessage.bind(this);
 		this.socket.onclose 	= this._onClose.bind(this);
+
 	} catch(e){
 		this._isConnected = false;
 		console.log("[connect:Spacebrew] connection attempt failed")
@@ -216,7 +232,7 @@ Spacebrew.Client.prototype.connect = function(){
  */
 Spacebrew.Client.prototype.close = function(){
 	try {
-		if (this._isConnected == true) {
+		if (this._isConnected) {
 			this.socket.close();
 			this._isConnected = false;
 			console.log("[close:Spacebrew] closing websocket connection")
@@ -347,6 +363,13 @@ Spacebrew.Client.prototype._onOpen = function() {
 	this._isConnected = true;
 	if (this.admin.active) this.connectAdmin();
 
+	// if reconnect functionality is activated then clear interval timer when connection succeeds
+	if (this.reconnect_timer) {
+		console.log("[_onOpen:Spacebrew] tearing down reconnect timer")
+		this.reconnect_timer = clearInterval(this.reconnect_timer);
+		this.reconnect_timer = undefined;
+	}
+
   	// send my config
   	this.updatePubSub();
   	this.onOpen();
@@ -403,10 +426,23 @@ Spacebrew.Client.prototype._onMessage = function( e ){
  * @memberOf Spacebrew.Client
  */
 Spacebrew.Client.prototype._onClose = function() {
+	var self = this;
     console.log("[_onClose:Spacebrew] Spacebrew connection closed");
 
 	this._isConnected = false;
 	if (this.admin.active) this.admin.remoteAddress = undefined;
+
+	// if reconnect functionality is activated set interval timer if connection dies
+	if (this.reconnect && !this.reconnect_timer) {
+		console.log("[_onClose:Spacebrew] setting up reconnect timer");
+		this.reconnect_timer = setInterval(function () {
+				if (self.isConnected != false) {
+					self.connect();
+					console.log("[reconnect:Spacebrew] attempting to reconnect to spacebrew");
+				}
+			}, 5000);
+	}
+
 
 	this.onClose();
 };
@@ -467,6 +503,9 @@ Spacebrew.Client.prototype.extend = function ( mixin ) {
         }
     }
 };
+
+
+
 
 
 

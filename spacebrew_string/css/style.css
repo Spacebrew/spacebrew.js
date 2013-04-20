@@ -55,3 +55,7 @@ a, a:link, a:visited { text-decoration: none; }
       -moz-transform: translateY(1px);
            transform: translateY(1px);
 }
+
+span {
+	line-height: 100%;
+}

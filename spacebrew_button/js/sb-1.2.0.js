@@ -22,7 +22,7 @@
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
  * @filename	sb-1.2.0.js
  * @version 	1.2.0
- * @date 		Mar 24, 2013
+ * @date 		April 20, 2013
  * 
  */
 
@@ -124,15 +124,27 @@ Spacebrew.Client = function( server, name, description, options ){
 
 	var options = options || {};
 
-	this.debug = options.debug || server.debug || false;
-	this.reconnect = options.reconnect || server.reconnect || false;
+	// check if the server variable is an object that holds all config values
+	if (server != undefined) {
+		if (toString.call(server) !== '[object String]') {
+			name = server.name || undefined;
+			description = server.description || undefined;
+			options.port = server.port || undefined;
+			options.debug = server.debug || false;
+			options.reconnect = server.reconnect || false;
+			server = server.server || undefined;
+		}	
+	}
+
+	this.debug = options.debug || false;
+	this.reconnect = options.reconnect || true;
 	this.reconnect_timer = undefined;
 
 	/**
 	 * Name of app
 	 * @type {String}
 	 */
-	this._name = name || "javascript client";
+	this._name = name || "javascript client #";
 	if (window) {
 		this._name = (window.getQueryString('name') !== "" ? unescape(window.getQueryString('name')) : this._name);
 	}
@@ -352,12 +364,11 @@ Spacebrew.Client.prototype._onOpen = function() {
 	if (this.admin.active) this.connectAdmin();
 
 	// if reconnect functionality is activated then clear interval timer when connection succeeds
-	if (this.reconnect && this.reconnect_timer) {
+	if (this.reconnect_timer) {
 		console.log("[_onOpen:Spacebrew] tearing down reconnect timer")
 		this.reconnect_timer = clearInterval(this.reconnect_timer);
 		this.reconnect_timer = undefined;
 	}
-
 
   	// send my config
   	this.updatePubSub();
@@ -423,10 +434,12 @@ Spacebrew.Client.prototype._onClose = function() {
 
 	// if reconnect functionality is activated set interval timer if connection dies
 	if (this.reconnect && !this.reconnect_timer) {
-		console.log("[_onClose:Spacebrew] setting up reconnect timer")
+		console.log("[_onClose:Spacebrew] setting up reconnect timer");
 		this.reconnect_timer = setInterval(function () {
-				self.connect()
-				console.log("[reconnect:Spacebrew] attempting to reconnect to spacebrew")
+				if (self.isConnected != false) {
+					self.connect();
+					console.log("[reconnect:Spacebrew] attempting to reconnect to spacebrew");
+				}
 			}, 5000);
 	}
 
@@ -490,6 +503,9 @@ Spacebrew.Client.prototype.extend = function ( mixin ) {
         }
     }
 };
+
+
+
 
 
 
