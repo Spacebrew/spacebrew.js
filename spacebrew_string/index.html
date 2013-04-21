@@ -53,7 +53,11 @@
 			 * Function that is called when Spacebrew connection is established
 			 */
 			function onOpen() {
-				$("#name").html("Connected as <strong>" + app_name + "</strong>");
+				var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+				if (sb.name() === app_name) {
+					message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+				}
+				$("#name").html( message );
 			}
 
 			/**
