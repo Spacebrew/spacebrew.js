@@ -18,8 +18,8 @@
  * - added methods to handle admin messages and to update routes.
  * 
  * @author 		Julio Terra
- * @filename	sb-admin-0.1.1.js
- * @version 	0.1.1
+ * @filename	sb-admin-0.1.2.js
+ * @version 	0.1.2
  * @date 		April 8, 2013
  * 
  */
@@ -423,4 +423,13 @@ Spacebrew.Admin._getPubSubType = function (pub_or_sub, client_name, remote_addre
 Spacebrew.Admin.isThisApp = function (client_name, remote_address){
 	if (this._name === client_name && this.admin.remoteAddress === remote_address) return true;
 	else return false;
+}
+
+Spacebrew.Admin.getMsgs = function ( get_msgs ) {
+	if (get_msgs == false) {
+		config.no_msgs = false;
+	} 
+	else {
+		config.no_msgs = true;		
+	}
 }
