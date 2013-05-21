@@ -11,18 +11,19 @@
  * spaces. Or, in other words, a simple way to connect interactive things to one another. Learn 
  * more about Spacebrew here: http://docs.spacebrew.cc/
  *
- * To import into your web apps, we recommend using the minimized version of this library, 
- * filename sb-1.0.4.min.js.
+ * To import into your web apps, we recommend using the minimized version of this library.
  *
  * Latest Updates:
+ * - added blank "options" attribute to config message - for future use 
+ * - caps number of messages sent to 60 per second
  * - reconnect to spacebrew if connection lost
  * - enable client apps to extend libs with admin functionality.
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.2.0.js
- * @version 	1.2.0
- * @date 		April 20, 2013
+ * @filename	sb-1.3.0.js
+ * @version 	1.3.0
+ * @date 		May 7, 2013
  * 
  */
 
@@ -127,18 +128,22 @@ Spacebrew.Client = function( server, name, description, options ){
 	// check if the server variable is an object that holds all config values
 	if (server != undefined) {
 		if (toString.call(server) !== '[object String]') {
-			name = server.name || undefined;
-			description = server.description || undefined;
 			options.port = server.port || undefined;
 			options.debug = server.debug || false;
 			options.reconnect = server.reconnect || false;
+			description = server.description || undefined;
+			name = server.name || undefined;
 			server = server.server || undefined;
 		}	
 	}
 
-	this.debug = options.debug || false;
+	this.debug = (window.getQueryString('debug') === "true" ? true : (options.debug || false));
 	this.reconnect = options.reconnect || true;
 	this.reconnect_timer = undefined;
+
+	this.send_interval = 16;
+	this.send_blocked = false;
+	this.msg = {};
 
 	/**
 	 * Name of app
@@ -197,7 +202,8 @@ Spacebrew.Client = function( server, name, description, options ){
 		},
 		subscribe:{
 			messages:[]
-		}
+		},
+		options:{}
 	};
 
 	this.admin = {}
@@ -339,17 +345,31 @@ Spacebrew.Client.prototype.updatePubSub = function(){
  * @public
  */
 Spacebrew.Client.prototype.send = function( name, type, value ){
-	var message = {
-		message: {
-           clientName:this._name,
-           name:name,
-           type:type,
-           value:value
-       }
-   	};
+	var self = this;
 
-   	//console.log(message);
-   	this.socket.send(JSON.stringify(message));
+	this.msg = {
+		"message": {
+           "clientName":this._name,
+           "name": name,
+           "type": type,
+           "value": value
+       }
+	}
+
+   	// if send block is not active then send message
+   	if (!this.send_blocked) {
+	   	this.socket.send(JSON.stringify(this.msg));
+		this.send_blocked = true;
+		this.msg = undefined;
+
+		// set the timer to unblock message sending
+		setTimeout(function() {
+			self.send_blocked = false;  	// remove send block			
+			if (self.msg != undefined) {  	// if message exists then sent it
+				self.send(self.msg.message.name, self.msg.message.type, self.msg.message.value);
+			}
+		}, self.send_interval);
+   	} 
 }
 
 /**
@@ -503,9 +523,4 @@ Spacebrew.Client.prototype.extend = function ( mixin ) {
         }
     }
 };
-
-
-
-
-
 
