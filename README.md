@@ -10,7 +10,7 @@ Main Contributors: 	Brett Renfer, Eric Eckhard-Ishii, Julio Terra
 Jump to:
 * [Using the Spacebrew Javascript Library](#using-javascript-library)  
 * [Spacebrew Library Examples](#javascript-library-examples)  
-* [Using the Spacebrew Admin Library](#using-spacebrew-admin-library)  
+* [Using the Spacebrew Admin Library](#using-spacebrew-admin-mix-in)  
   
 About Spacebrew
 ===============
@@ -63,12 +63,12 @@ sb.addSubscribe( name, type );
 Spacebrew offers lifecycle event hooks for connection open and close events - `onOpen`, and `onClose`; and for incoming message events of each data type - `onStringMessage`, `onRangeMessage`, of `onBooleanMessage`. You need to define the message handler methods in order to capture data from your subcriptions data feeds.
   
 ```
-sb.onStringMessage = function onString( name, value );
-sb.onRangeMessage = function onRange( name, value );
-sb.onBooleanMessage = function onBoolean( name, value );
-sb.onCustomMessage = function onBoolean( name, value, type );
-sb.onOpen = function onOpen();
-sb.onClose = function onClose();
+sb.onStringMessage = function onString( name, value ) {};
+sb.onRangeMessage = function onRange( name, value ) {};
+sb.onBooleanMessage = function onBoolean( name, value ) {};
+sb.onCustomMessage = function onBoolean( name, value, type ) {};
+sb.onOpen = function onOpen() {};
+sb.onClose = function onClose() {};
 ```
   
 ###6. Connect to Spacebrew
@@ -106,10 +106,77 @@ Web app that publishes and subscribes to the custom data type called dice. It fe
 Web app that features a graph that maps values received via three different subscription channels. It also features inputs for string and boolean values. These values are displayed in lists. 
   
 
-Using Spacebrew Admin Library
+Spacebrew Admin Mix-in
 ==============================   
   
-You can also integrate admin functionality directly into yor spacebrew client applications using the Spacebrew admin library along with the standard javascript library. Please note that this library is still in early development phases, which means that it will change and evolve a lot over the coming months. we will document the process for adding admin functionality into your client apps in the coming weeks.  
+You can also integrate admin functionality directly into yor spacebrew client applications using the Spacebrew admin library along with the standard javascript mix-in. Please note that this mix-in is still in early development phases, which means that it will change and evolve a lot over the coming months. we will document the process for adding admin functionality into your client apps in the coming weeks.  
+
+###Spacebrew Admin Mix-in Version Details
+Current Version: 	0.1.3  
+Latest Update: 		April 8, 2013   
+Main Contributors: 	Julio Terra   
+
+Using Spacebrew Admin Mix-in
+==============================   
+  
+Before you get started you need to download the spacebrew admin mix-in, and add it to your project's directory so that you can import it into your web app's code. This mix-in is included in the same folder as the Spacebrew javascript library.  
+
+###1. Import javascript mix-in into your project  
+Import the javascript library into your project using a script tag in the appropriate html page. You should import this file after the Spacebrew library.  
+  
+```
+<script src="path/sb-1.2.0.js"></script>
+<script src="path/sb-admin-0.1.3.js"></script>
+```
+  
+###2. Extend Spacebrew object with admin mix-in
+After you create the Spacebrew object you need to extend it with the admin mix-in by calling the `extend()` method as illustrated below.
+
+```
+sb = new Spacebrew.Client();
+sb.extend(Spacebrew.Admin);
+```
+  
+###3. Define admin event handler methods
+Several event hooks are provided by the Spacebrew admin mix-in. Please refer to the source file for more details regarding the arguments associated to each hook.
+
+```   
+// triggered when new client connects to server.  
+sb.onNewClient = function( client ) {};
+
+// triggered when existing client is reconfigured.  
+sb.onUpdateClient = function( client ) {};
+
+// triggered when an existing client disconnects from server.  
+sb.onRemoveClient = function ( name, address) {};
+
+// triggered when a route is added or removed.  
+sb.onUpdateRoute = function ( action, pub, sub )
+
+```  
+  
+###4. Add and remove routes
+The `addRoute` and `removeRoute` methods enable you to add and remove routes between any client apps that are connected to the Spacebrew server. These methods require the following information for publisher and subscriber associated to each route: client name, address, pub or sub name. You can provide this information as individual parameters, or group them together into separate publisher and subscriber parameter objects. 
+   
+```   
+sb.addRoute( publisher, subscriber )
+sb.addRoute( pub_client, pub_address, pub_name, sub_client, sub_address, sub_name )
+```
+
+```
+sb.removeRoute( publisher, subscriber )
+sb.removeRoute ( pub_client, pub_address, pub_name, sub_client, sub_address, sub_name )
+```  
+
+The four methods below enable you to easily create and remove routes that involve the client app with the embedded admin functionality.  
+   
+```
+sb.addSubRoute( pub_name, sub_client, sub_address, sub_name )
+sb.addPubRoute( sub_name, pub_client, pub_address, pub_name )
+
+sb.removeSubRoute( pub_name, sub_client, sub_address, sub_name )
+sb.removePubRoute( sub_name, pub_client, pub_address, pub_name )
+```  
   
 License  
 =======  

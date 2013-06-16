@@ -37,9 +37,15 @@ Spacebrew.Admin = {
 	}
 }
 
+/*********************************
+ ** ADMIN CONFIGURATION METHODS
+ *********************************/
+
 /**
  * Sends the admin config message to the Spacebrew server. This message resgisters
- * 		a client app as an admin app.
+ * 		a client app as an admin app. This method is automatically called by the 
+ * 		Spacebrew library if the library is extended with the admin mix-in before the
+ * 		client is configured.
  * 		
  * @memberOf Spacebrew.Admin
  * @private
@@ -47,6 +53,29 @@ Spacebrew.Admin = {
 Spacebrew.Admin.connectAdmin = function () {
 	this.socket.send(JSON.stringify(this.admin.config));	
 }
+
+/**
+ * Enables turning on or off configuration option for admin app to receive all
+ * 		messages sent between clients. This option must be set before the 
+ * 		Spacebrew server connection is made
+ * 		
+ * @param  {Boolean} get_msgs   Flag that sets admin message request on or off
+ * 
+ * @memberOf Spacebrew.Admin
+ * @public
+ */
+Spacebrew.Admin.getMsgs = function ( get_msgs ) {
+	if (get_msgs == false) {
+		config.no_msgs = false;
+	} 
+	else {
+		config.no_msgs = true;		
+	}
+}
+
+/*********************************
+ ** EVENT CALLBACK METHODS STUBS
+ *********************************/
 
 /**
  * Override in your app to receive new client information, e.g. sb.onNewClient = yourFunction
@@ -85,14 +114,14 @@ Spacebrew.Admin.onUpdateClient = function( client ){}
  * Override in your app to receive information about new routes, e.g. sb.onNewRoute = yourStringFunction
  * Admin-related method.
  * 
- * @param  {String} type 			Type of route message, either add or remove
+ * @param  {String} action 			Type of action route message, either add or remove
  * @param  {Object} pub 			Object with name of client name and address, publish name and type
  * @param  {Object} sub 			Object with name of client name and address, subscribe name and type
  * 
  * @memberOf Spacebrew.Admin
  * @public
  */
-Spacebrew.Admin.onUpdateRoute = function( type, pub, sub ){}
+Spacebrew.Admin.onUpdateRoute = function( action, pub, sub ){}
 
 /**
  * Override in your app to receive client removal messages, e.g. sb.onCustomMessage = yourStringFunction
@@ -105,6 +134,11 @@ Spacebrew.Admin.onUpdateRoute = function( type, pub, sub ){}
  * @public
  */
 Spacebrew.Admin.onRemoveClient = function( name, address ){}
+
+
+/**********************************
+ ** PRIVATE EVENT HANDLER METHODS
+ **********************************/
 
 /**
  * Handles admin messages received from the Spacbrew server. Routes the messages based on the
@@ -235,84 +269,9 @@ Spacebrew.Admin._setLocalIPAddress = function ( client ) {
 	}
 }
 
-/**
- * Returns the client that matches the name and remoteAddress parameters queried.
- * 
- * @param  {String} name           	Name of the client application
- * @param  {String} remoteAddress  	IP address of the client apps
- * @return {Object}                	Object featuring all client config information
- * 
- * @memberOf Spacebrew.Admin
- * @public
- */
-Spacebrew.Admin.getClient = function (name, remoteAddress){
-	var client;
-
-	for( var j = 0; j < this.admin.clients.length; j++ ){
-		client = this.admin.clients[j];
-		if ( client.name === name && client.remoteAddress === remoteAddress ) {
-			return client;
-		}
-	}
-}
-
-
-/**
- * returns a list of all subscribers that match a specific type.
- * @param  {String} type 	Data type of subscribers that should be returned
- * @return {Array}			Array with subscribers
- * 
- * @memberOf Spacebrew.Admin
- * @public
- */
-Spacebrew.Admin.subscribeListByType = function (type){
-	return this._pubSubByType("subscribe", type);
-}
-
-/**
- * returns a list of all publishers that match a specific type.
- * @param  {String} type 	Data type of publishers that should be returned
- * @return {Array}			Array with publishers
- * 
- * @memberOf Spacebrew.Admin
- * @public
- */
-Spacebrew.Admin.publishListByType = function (type){
-	return this._pubSubByType("publish", type);
-}
-
-/**
- * returns a list of all publishers or subscribers that match a specific type.
- * @param  {String} pub_or_sub 	Flag that identifies if method should return publishers or subscribers
- * @param  {String} type 		Data type of publishers or subscribers that should be returned
- * @return {Array}				Array with publishers
- * 
- * @memberOf Spacebrew.Admin
- * @private
- */
-Spacebrew.Admin._pubSubByType = function (pub_or_sub, type){
-	var client = {}
-		, filtered_clients = []
-		, pub_sub_item = {}
-		, new_item = {}
-		;
-
-	for( var j = 0; j < this.admin.clients.length; j++ ){
-		client = this.admin.clients[j];
-		for (var i = 0; i < client[pub_or_sub].messages.length; i++) {
-			pub_sub_item = client[pub_or_sub].messages[i];
-			if ( pub_sub_item.type === type ) {
-				new_item = { clientName: client.name
-							, remoteAddress: client.remoteAddress 
-							, name: pub_sub_item.name
-							, type: pub_sub_item.type
-						};
-				filtered_clients.push( new_item );
-			}			
-		}
-	}
-	return filtered_clients;
-}
+/**********************************
+ ** ROUTE HANDLER METHODS
+ **********************************/
 
 /**
  * Method that is used to add a route to the Spacebrew server
@@ -520,6 +479,10 @@ Spacebrew.Admin._compareRoutes = function (route_a, route_b){
 	return false;
 }
 
+/**********************************
+ ** INSPECT CLIENT METHODS
+ **********************************/
+
 /**
  * Returns the type of a publisher
  * 
@@ -580,7 +543,7 @@ Spacebrew.Admin._getPubSubType = function (pub_or_sub, client_name, remote_addre
 }
 
 /**
- * Checks if the a client name and ip address to refer to current app
+ * Checks if the a client name and ip address refer to current app
  * 
  * @param  {String}  client_name    Name of the client
  * @param  {String}  remote_address IP address of the client
@@ -595,20 +558,83 @@ Spacebrew.Admin.isThisApp = function (client_name, remote_address){
 }
 
 /**
- * Enables turning on or off configuration option for admin app to receive all
- * 		messages sent between clients. This option must be set before the 
- * 		Spacebrew server connection is made
- * 		
- * @param  {Boolean} get_msgs   Flag that sets admin message request on or off
+ * Returns the client that matches the name and remoteAddress parameters queried.
+ * 
+ * @param  {String} name           	Name of the client application
+ * @param  {String} remoteAddress  	IP address of the client apps
+ * @return {Object}                	Object featuring all client config information
  * 
  * @memberOf Spacebrew.Admin
  * @public
  */
-Spacebrew.Admin.getMsgs = function ( get_msgs ) {
-	if (get_msgs == false) {
-		config.no_msgs = false;
-	} 
-	else {
-		config.no_msgs = true;		
+Spacebrew.Admin.getClient = function (name, remoteAddress){
+	var client;
+
+	for( var j = 0; j < this.admin.clients.length; j++ ){
+		client = this.admin.clients[j];
+		if ( client.name === name && client.remoteAddress === remoteAddress ) {
+			return client;
+		}
 	}
+}
+
+/**********************************
+ ** UTILITY METHODS
+ **********************************/
+
+/**
+ * returns a list of all subscribers that match a specific type.
+ * @param  {String} type 	Data type of subscribers that should be returned
+ * @return {Array}			Array with subscribers
+ * 
+ * @memberOf Spacebrew.Admin
+ * @public
+ */
+Spacebrew.Admin.subscribeListByType = function (type){
+	return this._pubSubByType("subscribe", type);
+}
+
+/**
+ * returns a list of all publishers that match a specific type.
+ * @param  {String} type 	Data type of publishers that should be returned
+ * @return {Array}			Array with publishers
+ * 
+ * @memberOf Spacebrew.Admin
+ * @public
+ */
+Spacebrew.Admin.publishListByType = function (type){
+	return this._pubSubByType("publish", type);
+}
+
+/**
+ * returns a list of all publishers or subscribers that match a specific type.
+ * @param  {String} pub_or_sub 	Flag that identifies if method should return publishers or subscribers
+ * @param  {String} type 		Data type of publishers or subscribers that should be returned
+ * @return {Array}				Array with publishers
+ * 
+ * @memberOf Spacebrew.Admin
+ * @private
+ */
+Spacebrew.Admin._pubSubByType = function (pub_or_sub, type){
+	var client = {}
+		, filtered_clients = []
+		, pub_sub_item = {}
+		, new_item = {}
+		;
+
+	for( var j = 0; j < this.admin.clients.length; j++ ){
+		client = this.admin.clients[j];
+		for (var i = 0; i < client[pub_or_sub].messages.length; i++) {
+			pub_sub_item = client[pub_or_sub].messages[i];
+			if ( pub_sub_item.type === type ) {
+				new_item = { clientName: client.name
+							, remoteAddress: client.remoteAddress 
+							, name: pub_sub_item.name
+							, type: pub_sub_item.type
+						};
+				filtered_clients.push( new_item );
+			}			
+		}
+	}
+	return filtered_clients;
 }
