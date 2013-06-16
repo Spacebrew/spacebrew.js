@@ -148,7 +148,6 @@ sb.onRemoveClient = function ( name, address) {};
 
 // triggered when a route is added or removed.  
 sb.onUpdateRoute = function ( action, pub, sub )
-
 ```  
   
 ###4. Add and remove routes
@@ -169,7 +168,9 @@ The four methods below enable you to easily create and remove routes that involv
 ```
 sb.addSubRoute( pub_name, sub_client, sub_address, sub_name )
 sb.addPubRoute( sub_name, pub_client, pub_address, pub_name )
-
+```  
+  
+```
 sb.removeSubRoute( pub_name, sub_client, sub_address, sub_name )
 sb.removePubRoute( sub_name, pub_client, pub_address, pub_name )
 ```  
