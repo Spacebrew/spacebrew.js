@@ -171,8 +171,28 @@ Spacebrew.Admin._handleAdminMessages = function( data ){
 				subscriber: data.route.subscriber				
 			}
 		}
-		if ( data.route.type !== "remove" ) this.admin.routes.push( new_route );
-		else this.removeRoute(data.route.publisher, data.route.subscriber);
+		if ( data.route.type !== "remove" ){
+			var bFound = false;
+			for (var i = 0; i < this.admin.routes.length; i++) {
+				// if route does not exists then create it, otherwise abort
+				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)){
+					bFound = true;
+					break;
+				}
+			}
+			if ( !bFound ){
+				this.admin.routes.push(new_route);
+			}
+		} else {
+			for (var i = this.admin.routes.length - 1; i >= 0; i--) {
+				// if route exists then remove it, otherwise abort
+				if (this._compareRoutes(data.route, this.admin.routes[i].route)){
+					this.admin.routes.splice(i,i);
+					bFound = true;
+					break;
+				}
+			}
+		}
 		this.onUpdateRoute( data.route.type, data.route.publisher, data.route.subscriber );
 	} 
 
@@ -460,10 +480,18 @@ Spacebrew.Admin._updateRoute = function ( type, pub_client, pub_address, pub_nam
 		}
 
 		else if (type === "remove") {
+			var bFound = false;
 			for (var i = this.admin.routes.length - 1; i >= 0; i--) {
 				// if route exists then remove it, otherwise abort
-				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)) this.admin.routes.splice(i,i);
-				else return;
+				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)){
+					this.admin.routes.splice(i,i);
+					bFound = true;
+					break;
+				}
+			}
+			if ( !bFound ){
+				console.log("[_updateRoute] trying to remove route that does not exist");
+				//return;
 			}
 		}
 
