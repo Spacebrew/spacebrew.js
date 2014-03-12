@@ -17,9 +17,9 @@
  * - enable client apps to be extended to include admin privileges.
  * - added methods to handle admin messages and to update routes.
  * 
- * @author 		Julio Terra
- * @filename	sb-admin-0.1.3.js
- * @version 	0.1.3
+ * @author 		Julio Terra and Brett Renfer
+ * @filename	sb-admin-0.1.4.js
+ * @version 	0.1.4
  * @date 		April 8, 2013
  * 
  */

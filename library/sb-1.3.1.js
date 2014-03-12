@@ -21,8 +21,8 @@
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.0.js
- * @version 	1.3.0
+ * @filename	sb-1.3.1.js
+ * @version 	1.3.1
  * @date 		May 7, 2013
  * 
  */
@@ -181,7 +181,7 @@ Spacebrew.Client = function( server, name, description, options ){
 	 */
 	this.port = options.port || 9000;
 	if (window) {
-		port = window.getQueryString('port');
+		var port = window.getQueryString('port');
 		if (port !== "" && !isNaN(port)) { 
 			this.port = port; 
 		} 
