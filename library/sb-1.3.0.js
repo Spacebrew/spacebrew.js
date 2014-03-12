@@ -137,7 +137,10 @@ Spacebrew.Client = function( server, name, description, options ){
 		}	
 	}
 
-	this.debug = (window.getQueryString('debug') === "true" ? true : (options.debug || false));
+	this.debug = false;
+	if ( window ){
+		this.debug = (window.getQueryString('debug') === "true" ? true : (options.debug || false));
+	}
 	this.reconnect = options.reconnect || true;
 	this.reconnect_timer = undefined;
 
