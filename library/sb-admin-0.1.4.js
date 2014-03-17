@@ -17,9 +17,9 @@
  * - enable client apps to be extended to include admin privileges.
  * - added methods to handle admin messages and to update routes.
  * 
- * @author 		Julio Terra
- * @filename	sb-admin-0.1.3.js
- * @version 	0.1.3
+ * @author 		Julio Terra and Brett Renfer
+ * @filename	sb-admin-0.1.4.js
+ * @version 	0.1.4
  * @date 		April 8, 2013
  * 
  */
@@ -158,12 +158,41 @@ Spacebrew.Admin._handleAdminMessages = function( data ){
 	else if (data["remove"]) {
 		if (this.debug) console.log("[_handleAdminMessages] remove client message ", data["remove"]);
 		for (var i = 0; i < data.remove.length; i ++) {
-			this.onRemoveClient( data.remove[i].name, data.remove[i].remoteAddress );
+			this._onRemoveClient( data.remove[i] );
 		}			
 	}
 
 	else if (data["route"]) {
 		if (this.debug) console.log("[_handleAdminMessages] route update message ", data["route"]);
+		var new_route = {
+			route: {
+				type: data.route.type,
+				publisher: data.route.publisher,
+				subscriber: data.route.subscriber				
+			}
+		}
+		if ( data.route.type !== "remove" ){
+			var bFound = false;
+			for (var i = 0; i < this.admin.routes.length; i++) {
+				// if route does not exists then create it, otherwise abort
+				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)){
+					bFound = true;
+					break;
+				}
+			}
+			if ( !bFound ){
+				this.admin.routes.push(new_route);
+			}
+		} else {
+			for (var i = this.admin.routes.length - 1; i >= 0; i--) {
+				// if route exists then remove it, otherwise abort
+				if (this._compareRoutes(data.route, this.admin.routes[i].route)){
+					this.admin.routes.splice(i,i);
+					bFound = true;
+					break;
+				}
+			}
+		}
 		this.onUpdateRoute( data.route.type, data.route.publisher, data.route.subscriber );
 	} 
 
@@ -220,6 +249,32 @@ Spacebrew.Admin._onNewClient = function( client ){
 		this.admin.clients.push( client );
 		this.onNewClient( client );
 	}
+}
+
+Spacebrew.Admin._onRemoveClient = function( client ){
+	var existing_client = false;
+	var clientIndex 	= -1;
+
+	for( var j = 0; j < this.admin.clients.length; j++ ){
+
+		if ( this.admin.clients[j].name === client.name
+			 && this.admin.clients[j].remoteAddress === client.remoteAddress ) {
+			if (this.debug) console.log("existing client logged on " + client.name + " address " + client.remoteAddress);				
+
+			existing_client = true;
+			clientIndex = j;
+		}
+	}
+
+	//if we found a matching client, remove it
+	if ( existing_client ) {
+		if (this.debug) console.log("removed client " + client.name + " address " + client.remoteAddress);				
+
+		this.admin.clients.splice( clientIndex, 1 );
+	}
+
+	// broadcast event regardless
+	this.onRemoveClient( client.name, client.remoteAddress );
 }
 
 /**
@@ -409,18 +464,34 @@ Spacebrew.Admin._updateRoute = function ( type, pub_client, pub_address, pub_nam
 		}
 
 		if (type === "add") {
+			var bFound = false;
 			for (var i = 0; i < this.admin.routes.length; i++) {
 				// if route does not exists then create it, otherwise abort
-				if (!this._compareRoutes(new_route, this.admin.routes[i])) this.admin.routes.push(new_route);
-				else return;
+				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)){
+					bFound = true;
+					break;
+				}
+			}
+			if ( bFound ){
+				return;
+			} else {
+				this.admin.routes.push(new_route);
 			}
 		}
 
 		else if (type === "remove") {
+			var bFound = false;
 			for (var i = this.admin.routes.length - 1; i >= 0; i--) {
 				// if route exists then remove it, otherwise abort
-				if (this._compareRoutes(new_route, this.admin.routes[i])) this.admin.routes.splice(i,i);
-				else return;
+				if (this._compareRoutes(new_route.route, this.admin.routes[i].route)){
+					this.admin.routes.splice(i,i);
+					bFound = true;
+					break;
+				}
+			}
+			if ( !bFound ){
+				console.log("[_updateRoute] trying to remove route that does not exist");
+				//return;
 			}
 		}
 
@@ -470,13 +541,25 @@ Spacebrew.Admin._updateRoute = function ( type, pub_client, pub_address, pub_nam
  * @private
  */
 Spacebrew.Admin._compareRoutes = function (route_a, route_b){
-	if ((route_a.clientName === route_b.clientName) &&
-		(route_a.name === route_b.name) &&
-		(route_a.type === route_b.type) &&
-		(route_a.remoteAddress === route_b.remoteAddress)) {
-		return true;
+	// publisher
+	var bPublisherMatch = false;
+
+	if ((route_a.publisher.clientName === route_b.publisher.clientName) &&
+		(route_a.publisher.name === route_b.publisher.name) &&
+		(route_a.publisher.type === route_b.publisher.type) &&
+		(route_a.publisher.remoteAddress === route_b.publisher.remoteAddress)) {
+		bPublisherMatch = true;
 	}
-	return false;
+
+	// subscriber
+	var bSubscriberMatch = false;
+	if ((route_a.subscriber.clientName === route_b.subscriber.clientName) &&
+		(route_a.subscriber.name === route_b.subscriber.name) &&
+		(route_a.subscriber.type === route_b.subscriber.type) &&
+		(route_a.subscriber.remoteAddress === route_b.subscriber.remoteAddress)) {
+		bSubscriberMatch = true;
+	}
+	return bSubscriberMatch && bPublisherMatch;
 }
 
 /**********************************
@@ -532,7 +615,7 @@ Spacebrew.Admin._getPubSubType = function (pub_or_sub, client_name, remote_addre
 		client = this.admin.clients[j];
 		if ( client.name === client_name && client.remoteAddress === remote_address ) {
 			for( var i = 0; i < client[pub_or_sub].messages.length; i++ ){
-				if (this.debug) console.log("Compare Types " + client[pub_or_sub].messages[i].name + " with " + pub_sub_name)
+				//if (this.debug) console.log("Compare Types " + client[pub_or_sub].messages[i].name + " with " + pub_sub_name)
 				if (client[pub_or_sub].messages[i].name === pub_sub_name) {
 					return client[pub_or_sub].messages[i].type;
 				}
