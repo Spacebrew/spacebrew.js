@@ -414,7 +414,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 	// handle client messages 
 	if (data["message"]) {
 		// check to make sure that this is not an admin message
-		if (!data.message["clientName"]) {
+		if (data.message["clientName"]) {
 			name = data.message.name;
 		    type = data.message.type;
 			value = data.message.value;

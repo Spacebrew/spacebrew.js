@@ -3,8 +3,8 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 	1.3.0  
-Latest Update: 		May 20, 2013   
+Current Version: 	1.3.1  
+Latest Update: 		March 21, 2014   
 Main Contributors: 	Brett Renfer, Eric Eckhard-Ishii, Julio Terra   
 
 Jump to:
@@ -27,7 +27,7 @@ Before you get started you need to download the spacebrew library, and add it to
 Import the javascript library into your project using a script tag in the appropriate html page. We usually include the page's javascript code in a separate file as well. This file should be imported after the library.  
   
 ```
-<script src="path/sb-1.3.0.js"></script>
+<script src="path/sb-1.3.1.js"></script>
 <script src="path/your_scripts.js"></script>
 ```
   
@@ -121,7 +121,7 @@ Before you get started you need to download the spacebrew admin mix-in, and add 
 Import the javascript library into your project using a script tag in the appropriate html page. You should import this file after the Spacebrew library.  
   
 ```
-<script src="path/sb-1.2.0.js"></script>
+<script src="path/sb-1.3.1.js"></script>
 <script src="path/sb-admin-0.1.4.js"></script>
 ```
   
