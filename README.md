@@ -108,9 +108,9 @@ Spacebrew Admin Mix-in
 You can also integrate admin functionality directly into yor spacebrew client applications using the Spacebrew admin library along with the standard javascript mix-in. Please note that this mix-in is still in early development phases, which means that it will change and evolve a lot over the coming months. we will document the process for adding admin functionality into your client apps in the coming weeks.  
 
 ###Spacebrew Admin Mix-in Version Details
-Current Version: 	0.1.3  
-Latest Update: 		April 8, 2013   
-Main Contributors: 	Julio Terra   
+Current Version: 	0.1.4 
+Latest Update: 		March 17, 2014   
+Main Contributors: 	Julio Terra, Brett Renfer  
 
 Using Spacebrew Admin Mix-in
 ==============================   
@@ -122,7 +122,7 @@ Import the javascript library into your project using a script tag in the approp
   
 ```
 <script src="path/sb-1.2.0.js"></script>
-<script src="path/sb-admin-0.1.3.js"></script>
+<script src="path/sb-admin-0.1.4.js"></script>
 ```
   
 ###2. Extend Spacebrew object with admin mix-in
