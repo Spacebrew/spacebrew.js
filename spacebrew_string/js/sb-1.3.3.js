@@ -21,8 +21,8 @@
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.2.js
- * @version 	1.3.2
+ * @filename	sb-1.3.3.js
+ * @version 	1.3.3
  * @date 		May 7, 2013
  * 
  */
@@ -144,7 +144,8 @@ Spacebrew.Client = function( server, name, description, options ){
 	this.reconnect = options.reconnect || true;
 	this.reconnect_timer = undefined;
 
-	this.send_interval = 16;
+	this.sendRateCapped = options.capSendRate === undefined ? false : options.capSendRate;
+	this.send_interval = options.sendRate || 16;
 	this.send_blocked = false;
 	this.msg = {};
 
@@ -359,20 +360,25 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
        }
 	}
 
-   	// if send block is not active then send message
-   	if (!this.send_blocked) {
-	   	this.socket.send(JSON.stringify(this.msg));
-		this.send_blocked = true;
-		this.msg = undefined;
+	// are we capping the rate at which we send messages?
+	if ( this.sendRateCapped ){
+	   	// if send block is not active then send message
+	   	if (!this.send_blocked) {
+		   	this.socket.send(JSON.stringify(this.msg));
+			this.send_blocked = true;
+			this.msg = undefined;
 
-		// set the timer to unblock message sending
-		setTimeout(function() {
-			self.send_blocked = false;  	// remove send block			
-			if (self.msg != undefined) {  	// if message exists then sent it
-				self.send(self.msg.message.name, self.msg.message.type, self.msg.message.value);
-			}
-		}, self.send_interval);
-   	} 
+			// set the timer to unblock message sending
+			setTimeout(function() {
+				self.send_blocked = false;  	// remove send block			
+				if (self.msg != undefined) {  	// if message exists then sent it
+					self.send(self.msg.message.name, self.msg.message.type, self.msg.message.value);
+				}
+			}, self.send_interval);
+	   	} 
+	} else {
+		this.socket.send(JSON.stringify(this.msg));
+	}
 }
 
 /**
