@@ -21,8 +21,8 @@
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.1.js
- * @version 	1.3.1
+ * @filename	sb-1.3.2.js
+ * @version 	1.3.2
  * @date 		May 7, 2013
  * 
  */
@@ -409,30 +409,31 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		, name
 		, type
 		, value
+		, clientName // not used yet, needs to be added to callbacks!
 		;
 
 	// handle client messages 
 	if (data["message"]) {
-		// check to make sure that this is not an admin message
-		if (!data.message["clientName"]) {
-			name = data.message.name;
-		    type = data.message.type;
-			value = data.message.value;
+		name = data.message.name;
+	    type = data.message.type;
+		value = data.message.value;
 
-			switch( type ){
-				case "boolean":
-					this.onBooleanMessage( name, value == "true" );
-					break;
-				case "string":
-					this.onStringMessage( name, value );
-					break;
-				case "range":
-					this.onRangeMessage( name, Number(value) );
-					break;
-				default:
-					this.onCustomMessage( name, value, type );
-			}			
-		}
+		// for now only adding this if we have it, for backwards compatibility
+		if ( data.message.clientName ) clientName = data.message.clientName;
+
+		switch( type ){
+			case "boolean":
+				this.onBooleanMessage( name, value == "true" );
+				break;
+			case "string":
+				this.onStringMessage( name, value );
+				break;
+			case "range":
+				this.onRangeMessage( name, Number(value) );
+				break;
+			default:
+				this.onCustomMessage( name, value, type );
+		}			
 	} 
 
 	// handle admin messages
