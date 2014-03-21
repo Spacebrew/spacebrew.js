@@ -21,8 +21,8 @@
  * - added close method to close Spacebrew connection.
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.3.js
- * @version 	1.3.3
+ * @filename	sb-1.3.4.js
+ * @version 	1.3.4
  * @date 		May 7, 2013
  * 
  */
@@ -419,27 +419,30 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		;
 
 	// handle client messages 
-	if (data["message"]) {
-		name = data.message.name;
-	    type = data.message.type;
-		value = data.message.value;
+	if (!("targetType" in data) || data["targetType"] == "client"){
+		//expecting only messages
+		if ("message" in data) {
+			name = data.message.name;
+		    type = data.message.type;
+			value = data.message.value;
 
-		// for now only adding this if we have it, for backwards compatibility
-		if ( data.message.clientName ) clientName = data.message.clientName;
+			// for now only adding this if we have it, for backwards compatibility
+			if ( data.message.clientName ) clientName = data.message.clientName;
 
-		switch( type ){
-			case "boolean":
-				this.onBooleanMessage( name, value == "true" );
-				break;
-			case "string":
-				this.onStringMessage( name, value );
-				break;
-			case "range":
-				this.onRangeMessage( name, Number(value) );
-				break;
-			default:
-				this.onCustomMessage( name, value, type );
-		}			
+			switch( type ){
+				case "boolean":
+					this.onBooleanMessage( name, value == "true" );
+					break;
+				case "string":
+					this.onStringMessage( name, value );
+					break;
+				case "range":
+					this.onRangeMessage( name, Number(value) );
+					break;
+				default:
+					this.onCustomMessage( name, value, type );
+			}
+		}
 	} 
 
 	// handle admin messages
