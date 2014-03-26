@@ -14,16 +14,12 @@
  * To import into your web apps, we recommend using the minimized version of this library.
  *
  * Latest Updates:
- * - added blank "options" attribute to config message - for future use 
- * - caps number of messages sent to 60 per second
- * - reconnect to spacebrew if connection lost
- * - enable client apps to extend libs with admin functionality.
- * - added close method to close Spacebrew connection.
+ * - fixed issue where initial admin config messages were not getting passed to admin.js lib
  * 
  * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.4.js
- * @version 	1.3.4
- * @date 		May 7, 2013
+ * @filename	sb-1.3.5.js
+ * @version 	1.3.5
+ * @date 		March 25, 2014
  * 
  */
 
@@ -419,7 +415,8 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		;
 
 	// handle client messages 
-	if (!("targetType" in data) || data["targetType"] == "client"){
+	console.log("_onMessage ", e);
+	if ((!("targetType" in data) && !( data instanceof Array )) || data["targetType"] == "client"){
 		//expecting only messages
 		if ("message" in data) {
 			name = data.message.name;
