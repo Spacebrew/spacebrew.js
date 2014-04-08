@@ -14,12 +14,17 @@
  * To import into your web apps, we recommend using the minimized version of this library.
  *
  * Latest Updates:
- * - fixed issue where initial admin config messages were not getting passed to admin.js lib
+ * - added binary message support
+ * - added blank "options" attribute to config message - for future use 
+ * - caps number of messages sent to 60 per second
+ * - reconnect to spacebrew if connection lost
+ * - enable client apps to extend libs with admin functionality.
+ * - added close method to close Spacebrew connection.
  * 
- * @author 		Brett Renfer and Julio Terra from LAB @ Rockwell Group
- * @filename	sb-1.3.5.js
- * @version 	1.3.5
- * @date 		March 25, 2014
+ * @author 		LAB at Rockwell Group, Brett Renfer, Eric Eckhard-Ishii, Julio Terra, Quin Kennedy
+ * @filename	sb-1.4.0.js
+ * @version 	1.4.0
+ * @date 		April 8, 2014
  * 
  */
 
@@ -31,10 +36,10 @@ if (!Function.prototype.bind) {
   Function.prototype.bind = function (oThis) {  
 	if (typeof this !== "function") {  
 	  // closest thing possible to the ECMAScript 5 internal IsCallable function  
-	  throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");  
-	} 
-  
-	var aArgs = Array.prototype.slice.call(arguments, 1),   
+	  throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+	}
+
+	var aArgs = Array.prototype.slice.call(arguments, 1),
 		fToBind = this,   
 		fNOP = function () {},  
 		fBound = function () {  
@@ -48,8 +53,8 @@ if (!Function.prototype.bind) {
 	fBound.prototype = new fNOP();  
   
 	return fBound;  
-  };  
-} 
+  };
+}
 
 /**
  * @namespace for Spacebrew library
@@ -222,6 +227,7 @@ Spacebrew.Client = function( server, name, description, options ){
 Spacebrew.Client.prototype.connect = function(){
 	try {
 		this.socket 	 		= new WebSocket("ws://" + this.server + ":" + this.port);
+        this.socket.binaryType	= "arraybuffer";
 		this.socket.onopen 		= this._onOpen.bind(this);
 		this.socket.onmessage 	= this._onMessage.bind(this);
 		this.socket.onclose 	= this._onClose.bind(this);
@@ -266,7 +272,7 @@ Spacebrew.Client.prototype.onClose = function( name, value ){}
 /**
  * Override in your app to receive "range" messages, e.g. sb.onRangeMessage = yourRangeFunction
  * @param  {String} name  Name of incoming route
- * @param  {String} value [description]
+ * @param  {Number} value The data being provided
  * @memberOf Spacebrew.Client
  * @public
  */
@@ -275,7 +281,7 @@ Spacebrew.Client.prototype.onRangeMessage = function( name, value ){}
 /**
  * Override in your app to receive "boolean" messages, e.g. sb.onBooleanMessage = yourBoolFunction
  * @param  {String} name  Name of incoming route
- * @param  {String} value [description]
+ * @param  {Boolean} value The data being provided
  * @memberOf Spacebrew.Client
  * @public
  */
@@ -284,7 +290,7 @@ Spacebrew.Client.prototype.onBooleanMessage = function( name, value ){}
 /**
  * Override in your app to receive "string" messages, e.g. sb.onStringMessage = yourStringFunction
  * @param  {String} name  Name of incoming route
- * @param  {String} value [description]
+ * @param  {String} value The data being provided
  * @memberOf Spacebrew.Client
  * @public
  */
@@ -293,12 +299,20 @@ Spacebrew.Client.prototype.onStringMessage = function( name, value ){}
 /**
  * Override in your app to receive "custom" messages, e.g. sb.onCustomMessage = yourStringFunction
  * @param  {String} name  Name of incoming route
- * @param  {String} value [description]
+ * @param  {String} value The data being provided
+ * @param  {String} type  The type name of this route
  * @memberOf Spacebrew.Client
  * @public
  */
 Spacebrew.Client.prototype.onCustomMessage = function( name, value, type ){}
 
+/**
+ * Override in your app to receive any binary messages, e.g. sb.onBinaryMessage = yourBinaryFunction
+ * @param  {String} name  Name of incoming route
+ * @param  {ArrayBuffer} value The data being provided on the named route
+ * @param  {String} type  The type name of this route
+ */
+Spacebrew.Client.prototype.onBinaryMessage = function( name, value, type ){}
 
 /**
  * Add a route you are publishing on 
@@ -406,17 +420,51 @@ Spacebrew.Client.prototype._onOpen = function() {
  * @param  {Object} e
  * @memberOf Spacebrew.Client
  */
+
 Spacebrew.Client.prototype._onMessage = function( e ){
-	var data = JSON.parse(e.data)
-		, name
+	var data, binaryData;
+	if (e.data instanceof ArrayBuffer){
+		var binaryPacket = new Uint8Array(e.data);
+		var jsonLength = binaryPacket[0];
+		var jsonStartIndex = 1;
+		if (jsonLength == 254){
+			jsonLength = ((binaryPacket[1] << 8) + binaryPacket[2]);
+			jsonStartIndex = 3;
+		} else if (jsonLength == 255){
+			jsonLength = ((binaryPacket[1] << 24) + (binaryPacket[2] << 16) + (binaryPacket[3] << 8) + binaryPacket[4]);
+			jsonStartIndex = 5;
+		}
+		if (jsonLength > 0){
+			try {
+				var jsonString = "";
+				for (var i=jsonStartIndex; i<jsonStartIndex + jsonLength; i++) {
+		            jsonString += String.fromCharCode(binaryPacket[i])
+		        }
+				console.log(jsonString);
+				//var jsonString = jsonView.valueOf();
+				data = JSON.parse(jsonString);
+				//TODO: this copies the data to a new memory location, 
+				// is there a more efficient solution?
+				binaryData = e.data.slice(jsonStartIndex + jsonLength);
+			} catch (err){
+				console.error(err);
+				return;
+			}
+		} else {
+			//empty message?
+			return;
+		}
+	} else {
+		data = JSON.parse(e.data);
+	}
+	var name
 		, type
 		, value
 		, clientName // not used yet, needs to be added to callbacks!
 		;
 
 	// handle client messages 
-	console.log("_onMessage ", e);
-	if ((!("targetType" in data) && !( data instanceof Array )) || data["targetType"] == "client"){
+	if (!("targetType" in data) || data["targetType"] == "client"){
 		//expecting only messages
 		if ("message" in data) {
 			name = data.message.name;
@@ -424,21 +472,30 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 			value = data.message.value;
 
 			// for now only adding this if we have it, for backwards compatibility
-			if ( data.message.clientName ) clientName = data.message.clientName;
-
-			switch( type ){
-				case "boolean":
-					this.onBooleanMessage( name, value == "true" );
-					break;
-				case "string":
-					this.onStringMessage( name, value );
-					break;
-				case "range":
-					this.onRangeMessage( name, Number(value) );
-					break;
-				default:
-					this.onCustomMessage( name, value, type );
+			if ( data.message.clientName ) {
+				clientName = data.message.clientName;
 			}
+
+			if (binaryData != undefined){
+				this.onBinaryMessage( name, binaryData, type );
+			} else {
+				switch( type ){
+					case "boolean":
+						this.onBooleanMessage( name, value == "true" );
+						break;
+					case "string":
+						this.onStringMessage( name, value );
+						break;
+					case "range":
+						this.onRangeMessage( name, Number(value) );
+						break;
+					default:
+						this.onCustomMessage( name, value, type );
+				}
+			}
+		} else {
+			//illegal message
+			return;
 		}
 	} 
 
@@ -533,4 +590,3 @@ Spacebrew.Client.prototype.extend = function ( mixin ) {
         }
     }
 };
-

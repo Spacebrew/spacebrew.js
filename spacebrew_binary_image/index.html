@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+    <title>Spacebrew Image (Binary Example)</title>
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script type="text/javascript" src="js/jq.js"></script>
+	<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+    <script type="text/javascript">
+
+		$(window).on("load", setup);
+	      
+		// Spacebrew Object
+		var sb
+			, app_name = "image example"
+			;
+
+		/**
+	     * setup Configure spacebrew connection and adds the mousedown listener.
+	     */
+		function setup (){
+			var random_id = "0000" + Math.floor(Math.random() * 10000)
+				;
+
+			app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
+			// create spacebrew client object
+			sb = new Spacebrew.Client({reconnect:true});
+
+			// set the base description
+			sb.name(app_name);
+			sb.description("This spacebrew client sends and receives binary image messages.");
+
+			// configure the publication and subscription feeds
+			sb.addPublish( "image", "image" );
+			sb.addSubscribe( "image", "image" );
+
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onBinaryMessage = onBinaryMessage;
+			sb.onOpen = onOpen;
+
+			// connect to spacbrew
+			sb.connect();
+
+			// listen to the mouse 
+			$("#incoming_image").on("mousedown", onButtonPress);
+		}
+
+		/**
+		 * Function that is called when Spacebrew connection is established
+		 */
+		function onOpen() {
+			var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+			if (sb.name() === app_name) {
+				message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+			}
+			$("#name").html( message );
+		}
+
+		/**
+	     * Function that is called whenever the button is pressed.  
+	     * @param  {Event object} evt Holds information about the button press event
+	     */
+		function onButtonPress (evt){
+		    console.log("[onButtonPress] button has been pressed");
+		    //TODO: have this send previously-received image
+	        //sb.send("buttonPress", "boolean", "true");
+		}
+
+		var blobURL;
+
+		/**
+		 * onBooleanMessage Function that is called whenever new spacebrew boolean messages are received.
+		 *          It accepts two parameters:
+		 * @param  {String} name    Holds name of the subscription feed channel
+		 * @param  {Binary} value  Holds value received from the subscription feed
+		 */
+		function onBinaryMessage( name, value, type ){
+			console.log("[onBinaryMessage] binary message received: ", type);
+			var view = new Uint8Array(value);
+			var blob = new Blob([view], {type: 'image/jpeg'});
+			//make sure to clean up the previous url so the 
+			//  previous image can be cleared from memory!
+			window.URL.revokeObjectURL(blobURL);
+			blobURL = window.URL.createObjectURL(blob);
+			$("#incoming_image").attr("src", blobURL);
+		}
+
+	</script>
+	</head>
+
+	<body>
+		<div>Note: your (local) server must be set up to accept binary! This will <em>not work</em> with the sandbox!</div>
+		<img id="incoming_image"></img>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
+	</body>
+
+</html>
