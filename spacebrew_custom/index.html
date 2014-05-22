@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 
     <script type="text/javascript" src="js/jq.js"></script>
-	<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
     <script type="text/javascript">
 
 		$(window).on("load", setup);
@@ -68,7 +68,7 @@
 			roll = Math.floor( (Math.random() * 6) + 1);
 		    console.log("[onButtonPress] dice rolled " + roll); 
 			$("#cur_roll").text(roll); // display the sent message in the browser         
-	        sb.send("roll the dice", "dice", roll);
+	        sb.send("roll the dice", "dice", String(roll));
 		}
 
 		/**

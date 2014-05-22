@@ -1,21 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-    <title>Spacebrew Button (Boolean Example)</title>
+    <title>Spacebrew (Admin Connection Example)</title>
 
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 
     <script type="text/javascript" src="js/jq.js"></script>
-	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
+	<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+	<script type="text/javascript" src="js/sb-admin-0.1.4.js"></script>
     <script type="text/javascript">
 
 		$(window).on("load", setup);
 	      
 		// Spacebrew Object
 		var sb
-			, app_name = "button example"
+			, app_name = "admin example"
 			;
 
 		/**
@@ -30,17 +31,28 @@
 			// create spacebrew client object
 			sb = new Spacebrew.Client({reconnect:true});
 
+			// here's where you upgrade to an admin connetion!
+			sb.extend(Spacebrew.Admin);
+
 			// set the base description
 			sb.name(app_name);
-			sb.description("This spacebrew client sends and receives boolean messages.");
+			sb.description("This is a simple example of using the admin mix-in.");
 
 			// configure the publication and subscription feeds
 			sb.addPublish( "buttonPress", "boolean", "false" );
+			sb.addPublish( "newClient", "string", "" );
+
 			sb.addSubscribe( "toggleBackground", "boolean" );
 
 			// override Spacebrew events - this is how you catch events coming from Spacebrew
 			sb.onBooleanMessage = onBooleanMessage;
 			sb.onOpen = onOpen;
+
+			// special admin-only events
+			sb.onNewClient = onNewClient;
+			sb.onUpdateClient = onNewClient;
+			sb.onRemoveClient = onRemoveClient;
+			sb.onUpdateRoute = onUpdateRoute;
 
 			// connect to spacbrew
 			sb.connect();
@@ -94,6 +106,27 @@
 			}
 		}
 
+		var numClients = 0;
+
+		function onNewClient( client ) {
+			console.log("[onNewClient] new client ", client);
+			
+			// update HTML
+			$("#clients").html(sb.admin.clients.length);
+
+			// send name out as route (because, why not?)
+			sb.send( "newClient", "string", client.name );
+		}
+
+		function onRemoveClient( name, address ) {
+			console.log("[onRemoveClient] remove client '" + name + "' with address '" + address + "'");
+			$("#clients").html(sb.admin.clients.length);
+		}
+
+		function onUpdateRoute ( type, pub, sub ) {
+			//
+		}
+
 	</script>
 	</head>
 
@@ -104,6 +137,10 @@
 
 		</br></br>
 		<div id="name">Trying to connect</div>
+		<br />
+		<div id="clientDescriptions">
+			<div id="clients" style="float:left; padding-right:5px; font-weight:bold">0</div> clients connected
+		</div>
 	</body>
 
 </html>
