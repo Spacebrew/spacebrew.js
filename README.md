@@ -101,6 +101,12 @@ Web app with a text box publishes text messages to Spacebrew. App also subscribe
 
 ###Dice (Custom Data Type Example)
 Web app that publishes and subscribes to the custom data type called dice. It features a button that generates a random number between 1 and 6.
+
+###Spacebrew XY Pad (Range)
+A simple canvas-based touch pad that sends two ranges–one for an X value and one for a Y. Very useful on mobile, where you may shake your phone to send a "clear" boolean.
+
+###Spacebrew Shared Canvas
+An output example that takes in a set of messages to create a shared drawing canvas. Possible messages include an X and Y range for a virtual cursor; red, green, and blue ranges to adjust the background color; and a 'clear' boolean to erase the drawing.
   
 Spacebrew Admin Mix-in
 =======
