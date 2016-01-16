@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Spacebrew XY pad</title>
+
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+		<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+		<script src="js/shake.js"></script>
+
+		<script type="text/javascript">
+		  
+			// when window loads call the setup method
+			window.onload = setup;
+
+			// Spacebrew Object
+			var sb;
+
+			// name of your app; it'll be randomized below
+			var app_name;
+
+			var debugDiv;
+
+			// drawing stuff
+			var canvas;
+			var ctx;
+
+			// this is the thing doing the drawing
+			var cursor  = {x:0,y:0};
+			var radius	= 100;
+			var bDidDrawOnce = false;
+
+			/**
+			* setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
+			*/
+			function setup (){
+				var random_id = "0000" + Math.floor(Math.random() * 10000);
+
+				// randomize app name
+				app_name = 'xy pad ' + random_id.substring(random_id.length-4);
+
+				// setup spacebrew
+				sb = new Spacebrew.Client();  // create spacebrew client object
+
+				sb.name(app_name);
+				sb.description("This app sends text from an HTML form."); // set the app description
+
+		        // create the spacebrew subscription channels
+		        // create the publication feed
+				sb.addPublish("x", "range", "");
+				sb.addPublish("y", "range", "");
+				sb.addPublish("shake", "boolean","false")
+
+				// configure the publication and subscription feeds
+				// sb.onStringMessage = onStringMessage;		
+				sb.onOpen = onOpen;
+
+				// connect to spacbrew
+				sb.connect();
+
+				// setup our trace div
+				debugDiv = document.getElementById("name");
+				
+				canvas = document.getElementById("input");
+				ctx	= canvas.getContext('2d');
+
+				resizeCanvas();
+
+				setupInput("input");
+
+				window.onresize = resizeCanvas;
+
+				// listen for a shake
+				var myShakeEvent = new Shake({
+				    threshold: 15, // optional shake strength threshold
+				    timeout: 1000 // optional, determines the frequency of event generation
+				});
+				myShakeEvent.start();
+				window.addEventListener('shake', function(e){
+					sb.send("shake", "boolean", "true");
+				}, false);
+			}
+
+			/**
+			 * Function that is called when Spacebrew connection is established
+			 */
+			function onOpen() {
+				var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+				if (sb.name() === app_name) {
+					message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+				}
+
+				debugDiv.innerHTML = message;
+			}
+
+			/**
+			 * Begin touch events
+			 */
+			function setupInput(id){
+				var el = document.getElementById(id);
+				el.addEventListener("touchstart", handleStart, false);
+				el.addEventListener("touchend", handleEnd, false);
+				el.addEventListener("touchcancel", handleCancel, false);
+				el.addEventListener("touchmove", handleMove, false);
+
+				el.addEventListener("mousedown", handleStart, false);
+				el.addEventListener("mouseup", handleEnd, false);
+				el.addEventListener("mousemove", handleMove, false);
+
+				console.log( el );
+			}
+
+			/**
+			 * Touch handlers
+			 */
+			var isMouseDown = false;
+
+			function handleStart(e){
+				e.preventDefault();
+
+				isMouseDown = true;
+				console.log("start");
+			}
+
+			function handleMove(e){
+				if (!isMouseDown) return;
+
+				e.preventDefault();
+
+				// is this mouse or touches?
+				if ( !e.changedTouches ){
+					cursor.x = e.pageX;
+					cursor.y = e.pageY;
+
+					sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
+					sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+
+					renderCanvas();
+
+				} else {
+					var touches = e.changedTouches;
+					if ( touches && touches.length > 0 ){
+						cursor.x = e.pageX;
+						cursor.y = e.pageY;
+
+						sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
+						sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+
+						renderCanvas();
+					}
+				}
+			}
+
+			function handleEnd(e){
+				e.preventDefault();
+
+				// is this mouse or touches?
+				if ( !e.changedTouches ){
+					// it's the mouse
+					isMouseDown = false;
+				} else {
+					// it's touch
+					
+					if ( e.touches == 0 ){
+						isMouseDown = false;
+					}
+				}
+				clearCanvas();
+			}
+
+			function handleCancel(e){
+				handleEnd(e);
+			}
+
+			/**
+			 * This is where the magic (drawing) happens
+			 */
+			function renderCanvas(){
+				if ( ctx == null ) return;
+				if ( bDidDrawOnce ){
+					clearCanvas();
+					ctx.beginPath();
+					ctx.strokeStyle = 'black';
+					ctx.moveTo(cursor.x, cursor.y);
+					
+					ctx.lineTo(cursor.x + radius/2, cursor.y);
+					ctx.lineTo(cursor.x - radius/2, cursor.y);
+
+					ctx.moveTo(cursor.x, cursor.y);
+					ctx.lineTo(cursor.x, cursor.y + radius/2);
+					ctx.lineTo(cursor.x, cursor.y - radius/2);
+					ctx.moveTo(cursor.x, cursor.y);
+
+      				ctx.stroke();
+				}
+				bDidDrawOnce = true;
+			}
+
+			function clearCanvas(){
+				canvas.width = canvas.width;
+			}
+
+			function resizeCanvas(){
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+
+	    </script>
+	</head>
+
+	<body>
+		<div id=""></div>
+		<div id="name">Trying to connect</div>
+		<canvas id="input"></canvas>
+	</body>
+</html>
