@@ -1,0 +1,26 @@
+body 
+{
+			padding: 20px; font: 14px/145% "Helvetica Neue", Helvetica, Arial, Sans-serif;					
+			background: #eeeeee;
+}
+
+#input {
+   top: 0px;
+   left: 0px;
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   z-index: 1;
+}
+
+#name {
+   z-index: 3;
+}
+
+#cursor {
+   width: 2px;
+   height:2px;
+   position: absolute;
+   background-color: #000;
+   z-index: 2;
+}
