@@ -94,9 +94,11 @@
 
 			function onRangeMessage( name, value ){
 				if ( name == "cursorX" ){
-					cursor.x = parseInt(value);
+					cursor.x = parseInt(value/1023 * window.innerWidth);
+					renderCanvas();
 				} else if ( name == "cursorY" ){
-					cursor.y = parseInt(value);
+					cursor.y = parseInt(value/1023 * window.innerHeight);
+					renderCanvas();
 				} else if ( name == "colorR" ){
 					color.r = parseInt(value);
 				} else if ( name == "colorG" ){
@@ -113,7 +115,6 @@
 					bgColor.b = parseInt(value);
 					canvas.style.backgroundColor = "rgb(" + bgColor.r + "," + bgColor.g + ","+ bgColor.b + ")"
 				}
-				renderCanvas();
 			}
 
 			function onBooleanMessage( name, value ){
