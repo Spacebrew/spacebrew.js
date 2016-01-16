@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 		<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+		<script src="js/shake.js"></script>
 
 		<script type="text/javascript">
 		  
@@ -49,6 +50,7 @@
 		        // create the publication feed
 				sb.addPublish("x", "range", "");
 				sb.addPublish("y", "range", "");
+				sb.addPublish("shake", "boolean","false")
 
 				// configure the publication and subscription feeds
 				// sb.onStringMessage = onStringMessage;		
@@ -68,6 +70,16 @@
 				setupInput("input");
 
 				window.onresize = resizeCanvas;
+
+				// listen for a shake
+				var myShakeEvent = new Shake({
+				    threshold: 15, // optional shake strength threshold
+				    timeout: 1000 // optional, determines the frequency of event generation
+				});
+				myShakeEvent.start();
+				window.addEventListener('shake', function(e){
+					sb.send("clear", "boolean", "true");
+				}, false);
 			}
 
 			/**
