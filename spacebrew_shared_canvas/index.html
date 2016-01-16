@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Spacebrew XY pad</title>
+
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+		<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+
+		<script type="text/javascript">
+		  
+			// when window loads call the setup method
+			window.onload = setup;
+
+			// Spacebrew Object
+			var sb;
+
+			// name of your app; it'll be randomized below
+			var app_name;
+
+			var debugDiv;
+
+			// drawing stuff
+			var canvas;
+			var ctx;
+
+			// this is the thing doing the drawing
+			var cursor  	 = {x:0,y:0};
+			var lastCursor	 = {x:0,y:0};
+			var color		 = {r:0,g:0,b:0};
+			var bgColor		 = {r:0,g:0,b:0};
+			var bDidDrawOnce = false;
+
+			/**
+			* setup Function that connect to spacebrew and creates a listener for clicks of the submit button.
+			*/
+			function setup (){
+				var random_id = "0000" + Math.floor(Math.random() * 10000);
+
+				// randomize app name
+				app_name = 'xy pad ' + random_id.substring(random_id.length-4);
+
+				// setup spacebrew
+				sb = new Spacebrew.Client();  // create spacebrew client object
+
+				sb.name(app_name);
+				sb.description("This app sends text from an HTML form."); // set the app description
+
+		        // create the spacebrew subscription channels
+		        // create the publication feed
+				sb.addSubscribe("cursorX", "range", "");
+				sb.addSubscribe("cursorY", "range", "");
+
+				sb.addSubscribe("colorR", "range", "");
+				sb.addSubscribe("colorG", "range", "");
+				sb.addSubscribe("colorB", "range", "");
+
+				sb.addSubscribe("backgroundColorR", "range", "");
+				sb.addSubscribe("backgroundColorG", "range", "");
+				sb.addSubscribe("backgroundColorB", "range", "");
+
+				sb.addSubscribe("clear", "boolean", "");
+
+				// configure the publication and subscription feeds
+				// sb.onStringMessage = onStringMessage;		
+				sb.onOpen = onOpen;
+				sb.onRangeMessage = onRangeMessage;
+				sb.onBooleanMessage = onBooleanMessage;
+
+				// connect to spacbrew
+				sb.connect();
+
+				// setup our trace div
+				debugDiv	= document.getElementById("name");
+				
+				canvas = document.getElementById("input");
+				ctx	= canvas.getContext('2d');
+
+				resizeCanvas();
+			}
+
+			/**
+			 * Function that is called when Spacebrew connection is established
+			 */
+			function onOpen() {
+				var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+				if (sb.name() === app_name) {
+					message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+				}
+
+				debugDiv.innerHTML = message;
+			}
+
+			function onRangeMessage( name, value ){
+				if ( name == "cursorX" ){
+					cursor.x = parseInt(value);
+				} else if ( name == "cursorY" ){
+					cursor.y = parseInt(value);
+				} else if ( name == "colorR" ){
+					color.r = parseInt(value);
+				} else if ( name == "colorG" ){
+					color.g = parseInt(value);
+				} else if ( name == "colorB" ){
+					color.b = parseInt(value);
+				} else if ( name == "backgroundColorR" ){
+					bgColor.r = parseInt(value);
+					canvas.style.backgroundColor = "rgb(" + bgColor.r + "," + bgColor.g + ","+ bgColor.b + ")"
+				} else if ( name == "backgroundColorG" ){
+					bgColor.g = parseInt(value);
+					canvas.style.backgroundColor = "rgb(" + bgColor.r + "," + bgColor.g + ","+ bgColor.b + ")"
+				} else if ( name == "backgroundColorB" ){
+					bgColor.b = parseInt(value);
+					canvas.style.backgroundColor = "rgb(" + bgColor.r + "," + bgColor.g + ","+ bgColor.b + ")"
+				}
+				renderCanvas();
+			}
+
+			function onBooleanMessage( name, value ){
+				console.log(name);
+				if (name == "clear"){
+					clearCanvas();
+				}
+			}
+
+			/**
+			 * This is where the magic (drawing) happens
+			 */
+			function renderCanvas(){
+				if ( ctx == null ) return;
+				if ( bDidDrawOnce ){
+					// canvas.width = canvas.width;
+					ctx.strokeStyle = 'rgb('+color.r+','+color.g+','+color.b+')';
+					ctx.beginPath();
+					ctx.moveTo(lastCursor.x, lastCursor.y);
+					ctx.lineTo( cursor.x, cursor.y );
+					ctx.stroke();
+				}
+				bDidDrawOnce = true;
+				
+				lastCursor.x = cursor.x;
+				lastCursor.y = cursor.y;
+			}
+
+			function clearCanvas(){
+				canvas.width = canvas.width;
+			}
+
+			function resizeCanvas(){
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+
+	    </script>
+	</head>
+
+	<body>
+		<div id="name">Trying to connect</div>
+		<canvas id="input"></canvas>
+	</body>
+</html>
