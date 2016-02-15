@@ -7,23 +7,25 @@
     <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
 
-    <script type="text/javascript" src="js/jq.js"></script>
 	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
     <script type="text/javascript">
 
-		$(window).on("load", setup);
+    	window.onload = function(){
+    		setup();
+    	}
 	      
 		// Spacebrew Object
-		var sb
-			, app_name = "button example"
-			;
+		var sb, 
+			app_name = "button example";
 
 		/**
 	     * setup Configure spacebrew connection and adds the mousedown listener.
 	     */
 		function setup (){
-			var random_id = "0000" + Math.floor(Math.random() * 10000)
-				;
+			// we make a random name, which allows you connect more than one
+			// of this example from the same computer
+			// passing the "name" argument in a query string overrides this!
+			var random_id = "0000" + Math.floor(Math.random() * 10000);
 
 			app_name = app_name + ' ' + random_id.substring(random_id.length-4);
 
@@ -46,8 +48,11 @@
 			sb.connect();
 
 			// listen to the mouse 
-			$("#buttonMsg").on("mousedown", onButtonPress);
-			$("#buttonMsg").on("mouseup", onButtonRelease);
+			var button = document.getElementById("buttonMsg");
+			button.addEventListener("mouseup", onButtonPress);
+			button.addEventListener("mousedown", onButtonRelease);
+			button.addEventListener("touchstart", onButtonPress);
+			button.addEventListener("touchend", onButtonRelease);
 		}	
 
 		/**
@@ -56,9 +61,10 @@
 		function onOpen() {
 			var message = "Connected as <strong>" + sb.name() + "</strong>. ";
 			if (sb.name() === app_name) {
-				message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+				message += "<br>You can customize this app's name in the query string <br>by adding <strong>name=your_app_name</strong>."
 			}
-			$("#name").html( message );
+			var nameElement = document.getElementById("name");
+			nameElement.innerHTML = message;
 		}
 
 		/**
@@ -66,7 +72,11 @@
 	     * @param  {Event object} evt Holds information about the button press event
 	     */
 		function onButtonPress (evt){
-		      	console.log("[onButtonPress] button has been pressed"); 
+			// this line prevents the event being called twice
+			// on mobile 
+			evt.preventDefault(); 
+
+	      	console.log("[onButtonPress] button has been pressed"); 
 	        sb.send("buttonPress", "boolean", "true");
 		}
 
@@ -75,6 +85,10 @@
 	     * @param  {Event object} evt Holds information about the button press event
 	     */
 		function onButtonRelease (evt){
+			// this line prevents the event being called twice
+			// on mobile 
+			evt.preventDefault(); 
+
 	      	console.log("[onButtonRelease] button has been released"); 
 	        sb.send("buttonPress", "boolean", "false");
 		}
@@ -98,12 +112,13 @@
 	</head>
 
 	<body>
-		<h1>Click to send a message to spacebrew</h1>
-		<h3 id="numclicks"></h3>
-		<a class="button" id="buttonMsg">Click Me</a>
+		<div id="container">
+			<h1>Click to send a message<br/>to Spacebrew</h1>
+			<a class="button" id="buttonMsg">Click Me</a>
 
-		</br></br>
-		<div id="name">Trying to connect</div>
+			</br></br>
+			<div id="name">Trying to connect</div>
+		</div>
 	</body>
 
 </html>
