@@ -22,8 +22,8 @@
  * - added close method to close Spacebrew connection.
  *
  * @author		LAB at Rockwell Group, Brett Renfer, Eric Eckhard-Ishii, Julio Terra, Quin Kennedy
- * @filename	sb-1.4.0.js
- * @version		1.4.0
+ * @filename	sb-1.4.1.js
+ * @version		1.4.1
  * @date		April 8, 2014
  *
  */
@@ -147,7 +147,7 @@ Spacebrew.Client = function( server, name, description, options ){
 	if ( window ){
 		this.debug = (window.getQueryString("debug") === "true" ? true : (options.debug || false));
 	}
-	this.reconnect = options.reconnect || true;
+	this.reconnect = typeof options.reconnect === "boolean" ? options.reconnect : true;
 	this.reconnect_timer = undefined;
 
 	this.sendRateCapped = options.capSendRate === undefined ? false : options.capSendRate;
@@ -502,7 +502,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 		;
 
 	// handle client messages
-	if (!("targetType" in data) || data["targetType"] == "client"){
+	if ((!("targetType" in data) && !(data instanceof Array)) || data["targetType"] == "client"){
 		//expecting only messages
 		if ("message" in data) {
 			name = data.message.name;
@@ -539,7 +539,7 @@ Spacebrew.Client.prototype._onMessage = function( e ){
 
 	// handle admin messages
 	else {
-		if (this.admin.active) {
+		if (this.admin) {
 			this._handleAdminMessages( data );
 		}
 	}

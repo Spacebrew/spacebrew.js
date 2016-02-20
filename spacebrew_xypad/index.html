@@ -6,7 +6,7 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
-		<script type="text/javascript" src="js/sb-1.4.0.js"></script>
+		<script type="text/javascript" src="js/sb-1.4.1.js"></script>
 		<script src="js/shake.js"></script>
 
 		<script type="text/javascript">
@@ -133,8 +133,8 @@
 					cursor.x = e.pageX;
 					cursor.y = e.pageY;
 
-					sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
-					sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+					sb.send("x", "range", (Math.round(cursor.x/window.innerWidth*1023) ).toString());
+					sb.send("y", "range", ( Math.round(cursor.y/window.innerHeight*1023) ).toString());
 
 					renderCanvas();
 
@@ -144,8 +144,8 @@
 						cursor.x = e.pageX;
 						cursor.y = e.pageY;
 
-						sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
-						sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+						sb.send("x", "range", ( Math.round(cursor.x/window.innerWidth*1023) ).toString());
+						sb.send("y", "range", ( Math.round(cursor.y/window.innerHeight*1023) ).toString());
 
 						renderCanvas();
 					}

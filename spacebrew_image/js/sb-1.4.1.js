@@ -147,7 +147,7 @@ Spacebrew.Client = function( server, name, description, options ){
 	if ( window ){
 		this.debug = (window.getQueryString("debug") === "true" ? true : (options.debug || false));
 	}
-	this.reconnect = options.reconnect || true;
+	this.reconnect = typeof options.reconnect === "boolean" ? options.reconnect : true;
 	this.reconnect_timer = undefined;
 
 	this.sendRateCapped = options.capSendRate === undefined ? false : options.capSendRate;

@@ -1,0 +1,36 @@
+html, body {
+   background: darkblue;
+   overflow: hidden;
+}
+
+#info {
+   font-size: 12px;
+   padding:20px;
+   background-color:rgba(255,255,255,.5);
+   position: absolute;
+   z-index: 2;
+   left: 0px;
+   top:0px;
+}
+
+#row {
+   display: flex;
+   flex-direction: row;
+   height: 100%;
+   width: 100%;
+   position: absolute;
+   top: 0px;
+   left: 0px;
+}
+
+.note {
+   border: 1px rgba(0,0,0,.5) solid;
+   background-color:rgba(198,0,248,1);
+   width: 8.3%;
+   transition: transform ease-in-out .25s, opacity ease-in-out .25s;
+}
+
+.sharp {
+   border: none;
+   background-color:rgba(99,0,124,1);
+}
