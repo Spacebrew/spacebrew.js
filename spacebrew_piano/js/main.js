@@ -94,4 +94,17 @@ function setupUI(){
 	// set "name" div
 	var about = document.getElementById("about");
 	about.innerHTML = appName;
+
+	
+	// fix for sound on mobile!
+	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+		var start = document.getElementById("mobileStart");
+		start.style.visibility = "visible";
+		start.style.display = "block";
+		start.addEventListener("touchend", function(e){
+			e.preventDefault();
+			Tone.startMobile();
+			document.body.removeChild(start);
+		});
+	}
 }

@@ -46,3 +46,22 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+#mobileStart {
+   top:0px;
+   left:0px;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   z-index: 10;
+   background-color:#c600f8;
+   color: white;
+   visibility: hidden;
+   display: none;
+   font-size: 20vh;
+   line-height: 70vh;
+   text-align: center;
+   display: flex;
+   font-weight: bold;
+   flex-direction: column;
+}
