@@ -133,8 +133,8 @@
 					cursor.x = e.pageX;
 					cursor.y = e.pageY;
 
-					sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
-					sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+					sb.send("x", "range", (Math.round(cursor.x/window.innerWidth*1023) ).toString());
+					sb.send("y", "range", ( Math.round(cursor.y/window.innerHeight*1023) ).toString());
 
 					renderCanvas();
 
@@ -144,8 +144,8 @@
 						cursor.x = e.pageX;
 						cursor.y = e.pageY;
 
-						sb.send("x", "range", (cursor.x/window.innerWidth*1023).toString());
-						sb.send("y", "range", (cursor.y/window.innerHeight*1023).toString());
+						sb.send("x", "range", ( Math.round(cursor.x/window.innerWidth*1023) ).toString());
+						sb.send("y", "range", ( Math.round(cursor.y/window.innerHeight*1023) ).toString());
 
 						renderCanvas();
 					}
