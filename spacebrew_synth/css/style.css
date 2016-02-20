@@ -10,16 +10,18 @@
 
 .synth {
    display: flex;
-   width: 33%;
+   width: 32%;
    align-items: center;
    flex-direction: column;
-   border-left: 7px #c600f8 solid;
+   margin-left: 1%;
+   background-color: #eee;
 }
 
 .display {
    border-radius: 50%;
    background-color: black;
    transition: background ease-in-out .1s, width ease-in-out .1s, height ease-in-out .1s;
+   margin-top: 20px;
 }
 
 .range {
@@ -37,5 +39,10 @@
 }
 
 .text {
-   padding-top:10px;
+   width: 80%;
+    color: white;
+    background-color: #c600f8;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
