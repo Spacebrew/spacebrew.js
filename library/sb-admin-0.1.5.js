@@ -18,9 +18,9 @@
  * - added methods to handle admin messages and to update routes.
  * 
  * @author 		Julio Terra and Brett Renfer
- * @filename	sb-admin-0.1.4.js
- * @version 	0.1.4
- * @date 		April 8, 2013
+ * @filename	sb-admin-0.1.5.js
+ * @version 	0.1.5
+ * @date 		March 19, 2016
  * 
  */
 
@@ -150,7 +150,7 @@ Spacebrew.Admin.onRemoveClient = function( name, address ){}
  */
 Spacebrew.Admin._handleAdminMessages = function( data ){
 	if (this.debug) console.log("[_handleAdminMessages] new message received ");
-
+	
 	if (data["admin"]) {
 		// nothing to be done
 	}
@@ -203,7 +203,9 @@ Spacebrew.Admin._handleAdminMessages = function( data ){
 		for (var i = 0; i < data.length; i ++) {
 			if (data[i]["config"]) {
 				this._onNewClient(data[i].config);
-			} 
+			} else {
+				this._handleAdminMessages(data[i]);
+			}
 		}
 	}	
 }
