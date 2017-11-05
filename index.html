@@ -1,29 +1,86 @@
 <html>
 	<head>
 	</head>
+	<style type="text/css">
+		html {
+			font-family: Helvetica;
+			border:0px none;
+			padding: 0px;
+		}
+		a {
+			padding: 5px;
+		}
+
+		.pad {
+			padding: 5px;
+		}
+	</style>
 	<body>
-		<div>
+		<h1>Spacebrew Examples</h1>
+		<div style="width:50%; min-width: 400px; max-width: 600px">
 			Please remember to give your client a unique name. You can click one of the following links and add your unique name after the "name=" in the query string and press enter to re-load the page with your unique name.
 		</div>
-		Button:
-		<a href='spacebrew_button/index.html?name='>local</a>
-		<a href='spacebrew_button/index.html?server=lab-server&name='>lab</a>
-		<a href='spacebrew_button/index.html?server=sandbox.spacebrew.cc&name='>cloud</a>
-		<br />
-		Slider:
-		<a href='spacebrew_slider/index.html?name='>local</a>
-		<a href='spacebrew_slider/index.html?server=lab-server&name='>lab</a>
-		<a href='spacebrew_slider/index.html?server=sandbox.spacebrew.cc&name='>cloud</a>
-		<br />
-		String:
-		<a href='spacebrew_string/index.html?name='>local</a>
-		<a href='spacebrew_string/index.html?server=lab-server&name='>lab</a>
-		<a href='spacebrew_string/index.html?server=sandbox.spacebrew.cc&name='>cloud</a>
-		<br />
-		Custom:
-		<a href='spacebrew_custom/index.html?name='>local</a>
-		<a href='spacebrew_custom/index.html?server=lab-server&name='>lab</a>
-		<a href='spacebrew_custom/index.html?server=sandbox.spacebrew.cc&name='>cloud</a>
-		<br />
+		<div id="ex_b">
+			<h2>Basic Examples</h2>
+		</div>
+		<div id="ex_a">
+			<h2>Advanced Examples</h2>
+		</div>
+		<script type="text/javascript">
+
+			var examples_basic = [
+				"spacebrew_button",
+				"spacebrew_slider",
+				"spacebrew_string",
+				"spacebrew_image",
+				"spacebrew_piano",
+				"spacebrew_shared_canvas",
+				"spacebrew_synth",
+				"spacebrew_xypad",
+				"spacebrew_youtube",
+			];
+
+			var examples_advanced = [
+				"spacebrew_admin",
+				"spacebrew_binary_image",
+				"spacebrew_custom",
+			];
+
+			var p_bas = document.getElementById("ex_b");
+			var p_adv = document.getElementById("ex_a");
+
+			createElements( examples_basic, p_bas );
+			createElements( examples_advanced, p_adv );
+
+			var alt = false;
+
+			function createElements( array, parent ){
+				for ( var i=0; i<array.length; i++){
+					var n = array[i];
+					var div = document.createElement("div");
+					div.id = n +"_div";
+
+					parent.appendChild(div);
+					div.className = "pad";
+					div.innerHTML = "<strong>Example: " + n +"</strong>";
+					div.appendChild( createLink(n, "local") );
+					div.appendChild( createLink(n, "cloud", "sandbox.spacebrew.cc") );
+
+					if ( alt ){
+						div.style.backgroundColor = "#eee";
+					}
+					alt = !alt;
+				}
+			}
+
+			function createLink(type, text, server) {
+				var a = document.createElement("a");
+				a.href = type + "/index.html?name=";
+				if ( server != "" && server != undefined ) a.href += "&server=" + server;
+				a.innerHTML = text;
+				return a;
+			}
+
+		</script>
 	</body>
 </html>
