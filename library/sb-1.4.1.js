@@ -236,6 +236,7 @@ Spacebrew.Client.prototype.connect = function(){
 		this.socket.onopen		= this._onOpen.bind(this);
 		this.socket.onmessage	= this._onMessage.bind(this);
 		this.socket.onclose		= this._onClose.bind(this);
+		this.socket.onerror   = this._onError.bind(this);
 
 	} catch(e){
 		this._isConnected = false;
@@ -572,6 +573,35 @@ Spacebrew.Client.prototype._onClose = function() {
 
 
 	this.onClose();
+};
+
+/**
+* Called on WebSocket error
+* @private
+* @memberOf Spacebrew.Client
+*/
+Spacebrew.Client.prototype._onError = function(e) {
+ var self = this;
+ console.log("[_onError:Spacebrew] Spacebrew connection error");
+
+ this._isConnected = false;
+ if (this.admin.active) {
+	 this.admin.remoteAddress = undefined;
+ }
+
+ // if reconnect functionality is activated set interval timer if connection dies
+ if (this.reconnect && !this.reconnect_timer) {
+	 console.log("[_onError:Spacebrew] setting up reconnect timer");
+	 this.reconnect_timer = setInterval(function () {
+			 if (self.isConnected !== false) {
+				 self.connect();
+				 console.log("[reconnect:Spacebrew] attempting to reconnect to spacebrew");
+			 }
+		 }, 5000);
+ }
+
+
+ this.onError(e);
 };
 
 /**
