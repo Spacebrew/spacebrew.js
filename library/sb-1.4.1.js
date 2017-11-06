@@ -276,6 +276,13 @@ Spacebrew.Client.prototype.onOpen = function( name, value ){};
 Spacebrew.Client.prototype.onClose = function( name, value ){};
 
 /**
+ * Override in your app to receive on close event for connection
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onError = function( name, value ){};
+
+/**
  * Override in your app to receive "range" messages, e.g. sb.onRangeMessage = yourRangeFunction
  * @param  {String} name  Name of incoming route
  * @param  {Number} value The data being provided
@@ -578,6 +585,7 @@ Spacebrew.Client.prototype._onClose = function() {
 /**
 * Called on WebSocket error
 * @private
+* @param  {Object} e
 * @memberOf Spacebrew.Client
 */
 Spacebrew.Client.prototype._onError = function(e) {
