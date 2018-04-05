@@ -382,18 +382,30 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
        }
 	};
 
-	if (typeof(value) == "string"){
-		this.msg.message.value = value;
-	} else {
-		if (("buffer" in value) && (value.buffer instanceof ArrayBuffer)){
-			value = value.buffer;
-		}
-		if (value instanceof ArrayBuffer){
-			this.msg.message.value = value.byteLength;
-		} else {
-			//unexpected value type
+	switch(typeof(value)){
+		case "undefined":
+		  //throws hands up
+			console.warn("provided 'value' is undefined, not sending");
 			return;
-		}
+		case "string":
+		case "boolean":
+		case "number":
+		  this.msg.message.value = value;
+			break;
+		default:
+	  	if (("buffer" in value) && (value.buffer instanceof ArrayBuffer)){
+	  		value = value.buffer;
+	  	}
+	  	if (value instanceof ArrayBuffer){
+	  		this.msg.message.value = value.byteLength;
+	  	} else {
+	  		//unexpected value type
+				console.log(
+					"'value' of type",
+					typeof(value),
+					"unexpected, sending and hoping for the best");
+				this.msg.message.value = value;
+	  	}
 	}
 
 	// are we capping the rate at which we send messages?
