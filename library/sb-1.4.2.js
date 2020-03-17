@@ -22,9 +22,9 @@
  * - added close method to close Spacebrew connection.
  *
  * @author		LAB at Rockwell Group, Brett Renfer, Eric Eckhard-Ishii, Julio Terra, Quin Kennedy
- * @filename	sb-1.4.1.js
- * @version		1.4.1
- * @date		April 8, 2014
+ * @filename	sb-1.4.2.js
+ * @version		1.4.2
+ * @date		March 16, 2020
  *
  */
 
@@ -147,7 +147,7 @@ Spacebrew.Client = function( server, name, description, options ){
 	if ( window ){
 		this.debug = (window.getQueryString("debug") === "true" ? true : (options.debug || false));
 	}
-	this.reconnect = options.reconnect || true;
+	this.reconnect = typeof options.reconnect === "boolean" ? options.reconnect : true;
 	this.reconnect_timer = undefined;
 
 	this.sendRateCapped = options.capSendRate === undefined ? false : options.capSendRate;
@@ -236,6 +236,7 @@ Spacebrew.Client.prototype.connect = function(){
 		this.socket.onopen		= this._onOpen.bind(this);
 		this.socket.onmessage	= this._onMessage.bind(this);
 		this.socket.onclose		= this._onClose.bind(this);
+		this.socket.onerror   = this._onError.bind(this);
 
 	} catch(e){
 		this._isConnected = false;
@@ -273,6 +274,13 @@ Spacebrew.Client.prototype.onOpen = function( name, value ){};
  * @public
  */
 Spacebrew.Client.prototype.onClose = function( name, value ){};
+
+/**
+ * Override in your app to receive on close event for connection
+ * @memberOf Spacebrew.Client
+ * @public
+ */
+Spacebrew.Client.prototype.onError = function( name, value ){};
 
 /**
  * Override in your app to receive "range" messages, e.g. sb.onRangeMessage = yourRangeFunction
@@ -374,18 +382,30 @@ Spacebrew.Client.prototype.send = function( name, type, value ){
        }
 	};
 
-	if (typeof(value) == "string"){
-		this.msg.message.value = value;
-	} else {
-		if (("buffer" in value) && (value.buffer instanceof ArrayBuffer)){
-			value = value.buffer;
-		}
-		if (value instanceof ArrayBuffer){
-			this.msg.message.value = value.byteLength;
-		} else {
-			//unexpected value type
+	switch(typeof(value)){
+		case "undefined":
+		  //throws hands up
+			console.warn("provided 'value' is undefined, not sending");
 			return;
-		}
+		case "string":
+		case "boolean":
+		case "number":
+		  this.msg.message.value = value;
+			break;
+		default:
+	  	if (("buffer" in value) && (value.buffer instanceof ArrayBuffer)){
+	  		value = value.buffer;
+	  	}
+	  	if (value instanceof ArrayBuffer){
+	  		this.msg.message.value = value.byteLength;
+	  	} else {
+	  		//unexpected value type
+				console.log(
+					"'value' of type",
+					typeof(value),
+					"unexpected, sending and hoping for the best");
+				this.msg.message.value = value;
+	  	}
 	}
 
 	// are we capping the rate at which we send messages?
@@ -572,6 +592,36 @@ Spacebrew.Client.prototype._onClose = function() {
 
 
 	this.onClose();
+};
+
+/**
+* Called on WebSocket error
+* @private
+* @param  {Object} e
+* @memberOf Spacebrew.Client
+*/
+Spacebrew.Client.prototype._onError = function(e) {
+ var self = this;
+ console.log("[_onError:Spacebrew] Spacebrew connection error");
+
+ this._isConnected = false;
+ if (this.admin.active) {
+	 this.admin.remoteAddress = undefined;
+ }
+
+ // if reconnect functionality is activated set interval timer if connection dies
+ if (this.reconnect && !this.reconnect_timer) {
+	 console.log("[_onError:Spacebrew] setting up reconnect timer");
+	 this.reconnect_timer = setInterval(function () {
+			 if (self.isConnected !== false) {
+				 self.connect();
+				 console.log("[reconnect:Spacebrew] attempting to reconnect to spacebrew");
+			 }
+		 }, 5000);
+ }
+
+
+ this.onError(e);
 };
 
 /**
