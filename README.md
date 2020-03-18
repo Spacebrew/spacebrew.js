@@ -3,9 +3,9 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 	1.4.2 
-Latest Update: 		March 16, 2020
-Main Contributors: 	Brett Renfer, Julio Terra, Quin Kennedy, Eric Ishii Eckhardt
+* Current Version: 	1.4.2 
+* Latest Update: 		March 16, 2020
+* Main Contributors: 	Brett Renfer, Julio Terra, Quin Kennedy, Eric Ishii Eckhardt
 
 Jump to:
 * [Using the Spacebrew Javascript Library](#using-javascript-library)  
