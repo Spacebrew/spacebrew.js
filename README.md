@@ -3,8 +3,8 @@ Spacebrew Javascript Web Library and Core Examples
 
 This repo contains the Spacebrew Library for Javascript along with documentation and example apps. This library was designed to work on front-end (browser) envrionments, and back-end (server) environments. Below is a brief overview about Spacbrew, followed by a short tutorial on how to use this library. 
 
-Current Version: 	1.4.1 
-Latest Update: 		January 16, 2016
+Current Version: 	1.4.2 
+Latest Update: 		March 16, 2020
 Main Contributors: 	Brett Renfer, Julio Terra, Quin Kennedy, Eric Ishii Eckhardt
 
 Jump to:
@@ -27,7 +27,7 @@ Before you get started you need to download the spacebrew library, and add it to
 Import the javascript library into your project using a script tag in the appropriate html page. We usually include the page's javascript code in a separate file as well. This file should be imported after the library.  
   
 ```
-<script src="path/sb-1.4.0.js"></script>
+<script src="path/sb-1.4.2.js"></script>
 <script src="path/your_scripts.js"></script>
 ```
   
@@ -114,8 +114,8 @@ Spacebrew Admin Mix-in
 You can also integrate admin functionality directly into yor spacebrew client applications using the Spacebrew admin library along with the standard javascript mix-in. Please note that this mix-in is still in early development phases, which means that it will change and evolve a lot over the coming months. we will document the process for adding admin functionality into your client apps in the coming weeks.  
 
 ### Spacebrew Admin Mix-in Version Details
-Current Version: 	0.1.4 
-Latest Update: 		March 17, 2014   
+Current Version: 	0.1.5 
+Latest Update: 		March 19, 2016   
 Main Contributors: 	Julio Terra, Brett Renfer  
 
 Using Spacebrew Admin Mix-in
@@ -127,8 +127,8 @@ Before you get started you need to download the spacebrew admin mix-in, and add 
 Import the javascript library into your project using a script tag in the appropriate html page. You should import this file after the Spacebrew library.  
   
 ```
-<script src="path/sb-1.2.0.js"></script>
-<script src="path/sb-admin-0.1.4.js"></script>
+<script src="path/sb-1.4.2.js"></script>
+<script src="path/sb-admin-0.1.5.js"></script>
 ```
   
 ### 2. Extend Spacebrew object with admin mix-in
